@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Risk Tolerance Assessment</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0d0d0d;
+  --cream: #f5f0e8;
+  --gold: #b8960c;
+  --gold-light: #d4af37;
+  --muted: #7a7570;
+  --border: #ddd8cc;
+  --white: #ffffff;
+  --danger: #c0392b;
+  --navy: #0b1f3a;
+  --warn: #e67e22;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  min-height: 100vh;
+  padding: 2rem 1rem 4rem;
+}
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background: radial-gradient(ellipse at 15% 85%, rgba(184,150,12,0.07) 0%, transparent 55%),
+              radial-gradient(ellipse at 85% 15%, rgba(11,31,58,0.04) 0%, transparent 50%);
+  pointer-events: none; z-index: 0;
+}
+.container { width: 100%; max-width: 700px; margin: 0 auto; position: relative; z-index: 1; }
+
+.header { text-align: center; padding: 2rem 0 2.5rem; animation: fadeUp 0.7s ease both; }
+.header-eyebrow { font-size: 0.68rem; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.9rem; }
+.header h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 300; line-height: 1.15; color: var(--navy); margin-bottom: 0.9rem; }
+.header p { font-size: 0.9rem; color: var(--muted); line-height: 1.75; max-width: 480px; margin: 0 auto; }
+
+.progress-wrap { margin-bottom: 2rem; animation: fadeUp 0.7s 0.08s ease both; }
+.progress-meta { display: flex; justify-content: space-between; margin-bottom: 0.5rem; }
+.progress-label { font-size: 0.72rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.progress-count { font-family: 'Cormorant Garamond', serif; font-size: 0.95rem; color: var(--gold); }
+.progress-bar { height: 2px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-light)); border-radius: 2px; transition: width 0.45s cubic-bezier(0.4,0,0.2,1); }
+
+.card { background: var(--white); border: 1px solid var(--border); border-radius: 2px; padding: 2.5rem 2.5rem 2rem; box-shadow: 0 6px 50px rgba(0,0,0,0.055); animation: fadeUp 0.7s 0.15s ease both; }
+
+.question-number { font-size: 0.67rem; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.6rem; }
+.question-text { font-family: 'Cormorant Garamond', serif; font-size: clamp(1.25rem, 3vw, 1.6rem); font-weight: 400; line-height: 1.35; color: var(--ink); margin-bottom: 0.4rem; }
+.question-hint { font-size: 0.82rem; color: var(--muted); margin-bottom: 1.8rem; line-height: 1.5; }
+
+.options { display: flex; flex-direction: column; gap: 0.55rem; }
+.option { display: flex; align-items: center; gap: 0.9rem; padding: 0.9rem 1.05rem; border: 1px solid var(--border); border-radius: 2px; cursor: pointer; transition: all 0.18s ease; background: transparent; width: 100%; text-align: left; }
+.option:hover { border-color: var(--gold); background: rgba(184,150,12,0.03); }
+.option.selected { border-color: var(--gold); background: rgba(184,150,12,0.06); }
+.option-marker { width: 18px; height: 18px; border: 1px solid var(--border); border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.18s ease; }
+.option.selected .option-marker { border-color: var(--gold); background: var(--gold); }
+.option.selected .option-marker::after { content: ''; width: 5px; height: 5px; background: white; border-radius: 50%; }
+.option-text { font-size: 0.88rem; color: var(--ink); line-height: 1.4; }
+.option-sub { font-size: 0.75rem; color: var(--muted); margin-top: 0.15rem; }
+
+.input-group { display: flex; flex-direction: column; gap: 1.1rem; }
+.input-label { font-size: 0.72rem; font-weight: 500; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.35rem; }
+.input-field { width: 100%; padding: 0.85rem 1rem; border: 1px solid var(--border); border-radius: 2px; font-family: 'DM Sans', sans-serif; font-size: 0.92rem; color: var(--ink); background: transparent; outline: none; transition: border-color 0.2s; }
+.input-field:focus { border-color: var(--gold); }
+.input-prefix { display: flex; align-items: center; border: 1px solid var(--border); border-radius: 2px; overflow: hidden; transition: border-color 0.2s; }
+.input-prefix:focus-within { border-color: var(--gold); }
+.prefix-symbol { padding: 0.85rem 0.9rem; background: var(--cream); font-size: 0.88rem; color: var(--muted); font-weight: 500; border-right: 1px solid var(--border); }
+.input-prefix input { flex: 1; padding: 0.85rem 1rem; border: none; font-family: 'DM Sans', sans-serif; font-size: 0.92rem; color: var(--ink); background: transparent; outline: none; }
+
+.consistency-warning { display: none; background: rgba(230,126,34,0.08); border: 1px solid rgba(230,126,34,0.3); border-radius: 2px; padding: 0.85rem 1rem; margin-top: 1rem; font-size: 0.82rem; color: var(--warn); line-height: 1.5; }
+
+.nav { display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+.btn { display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.72rem 1.5rem; font-family: 'DM Sans', sans-serif; font-size: 0.78rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.18s ease; border-radius: 2px; border: none; }
+.btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+.btn-ghost:hover { border-color: var(--ink); color: var(--ink); }
+.btn-primary { background: var(--navy); color: var(--white); }
+.btn-primary:hover { background: #122944; }
+.error-msg { font-size: 0.78rem; color: var(--danger); margin-top: 0.5rem; }
+
+/* Results */
+.results-page { animation: fadeUp 0.6s ease both; }
+.results-hero { display: flex; flex-direction: column; align-items: center; text-align: center; padding-bottom: 2rem; border-bottom: 1px solid var(--border); margin-bottom: 2rem; }
+.score-ring { width: 170px; height: 170px; margin: 0 auto 1.5rem; position: relative; }
+.score-ring svg { transform: rotate(-90deg); }
+.score-ring-bg { fill: none; stroke: var(--border); stroke-width: 5; }
+.score-ring-fill { fill: none; stroke: var(--gold); stroke-width: 5; stroke-linecap: round; transition: stroke-dashoffset 1.6s cubic-bezier(0.4,0,0.2,1); }
+.score-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.score-number { font-family: 'Cormorant Garamond', serif; font-size: 3rem; font-weight: 300; line-height: 1; color: var(--ink); }
+.score-denom { font-size: 0.72rem; color: var(--muted); margin-top: 0.2rem; }
+.result-profile { font-family: 'Cormorant Garamond', serif; font-size: 1.9rem; font-weight: 400; color: var(--ink); margin-bottom: 0.5rem; }
+.result-desc { font-size: 0.88rem; color: var(--muted); line-height: 1.75; max-width: 460px; }
+
+.consistency-alert { display: none; background: rgba(230,126,34,0.07); border: 1px solid rgba(230,126,34,0.25); border-radius: 2px; padding: 1rem 1.2rem; margin-bottom: 1.5rem; font-size: 0.84rem; color: #b5651d; line-height: 1.6; }
+
+.dual-score-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; padding: 1.2rem 1.4rem; }
+.dual-score-card { border: 1px solid var(--border); border-radius: 2px; padding: 1.2rem 1.4rem; }
+.ds-label { font-size: 0.68rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.4rem; }
+.ds-value { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 300; color: var(--ink); }
+.ds-desc { font-size: 0.75rem; color: var(--muted); margin-top: 0.2rem; }
+
+.section-heading { font-size: 0.68rem; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); padding: 0.9rem 1.4rem; background: var(--cream); border-bottom: 1px solid var(--border); }
+.breakdown-card { border: 1px solid var(--border); border-radius: 2px; overflow: hidden; margin-bottom: 2rem; }
+.breakdown-row { display: flex; align-items: center; gap: 1rem; padding: 0.8rem 1.4rem; border-bottom: 1px solid var(--border); }
+.breakdown-row:last-child { border-bottom: none; }
+.breakdown-q { flex: 1; font-size: 0.82rem; color: var(--muted); }
+.breakdown-bar-wrap { width: 90px; height: 3px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.breakdown-bar { height: 100%; background: var(--gold); border-radius: 3px; }
+.breakdown-score { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; color: var(--ink); min-width: 42px; text-align: right; }
+
+.portfolio-card { border: 1px solid var(--border); border-radius: 2px; overflow: hidden; margin-bottom: 2rem; }
+.portfolio-grid { display: grid; grid-template-columns: 1fr 1fr; }
+.portfolio-item { padding: 1.1rem 1.4rem; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); }
+.portfolio-item:nth-child(2n) { border-right: none; }
+.portfolio-item:nth-last-child(-n+2) { border-bottom: none; }
+.portfolio-item:last-child:nth-child(odd) { border-bottom: none; }
+.pi-asset { font-size: 0.78rem; font-weight: 500; color: var(--muted); margin-bottom: 0.3rem; }
+.pi-weight { font-family: 'Cormorant Garamond', serif; font-size: 1.7rem; font-weight: 300; color: var(--ink); }
+.pi-bar-wrap { height: 2px; background: var(--border); border-radius: 2px; margin-top: 0.5rem; overflow: hidden; }
+.pi-bar { height: 100%; background: var(--gold); border-radius: 2px; }
+
+.geo-row { display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.4rem; border-bottom: 1px solid var(--border); }
+.geo-row:last-child { border-bottom: none; }
+.geo-label { flex: 1; font-size: 0.84rem; color: var(--ink); }
+.geo-bar-wrap { width: 120px; height: 3px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.geo-bar { height: 100%; background: var(--navy); border-radius: 3px; }
+.geo-pct { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; color: var(--ink); min-width: 38px; text-align: right; }
+
+.rationale-box { background: var(--navy); color: var(--white); border-radius: 2px; padding: 1.5rem 1.8rem; margin-bottom: 2rem; font-family: 'Cormorant Garamond', serif; font-size: 1.05rem; line-height: 1.75; font-style: italic; }
+.disclaimer { font-size: 0.73rem; color: var(--muted); line-height: 1.6; padding: 1rem 1.4rem; border: 1px solid var(--border); border-radius: 2px; margin-bottom: 1.5rem; }
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+.step { display: none; }
+.step.active { display: block; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="header">
+  <div class="header-eyebrow">Institutional Portfolio Advisory</div>
+  <h1>Risk Tolerance<br>Assessment</h1>
+  <p>An 18-question institutional-grade assessment covering financial capacity, behavioral tendencies, and investment knowledge — producing a personalised risk profile and portfolio allocation.</p>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-meta">
+    <span class="progress-label">Progress</span>
+    <span class="progress-count" id="progressCount">0 of 18</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+</div>
+
+<div class="card" id="surveyCard">
+
+  <!-- Q1 -->
+  <div class="step active" id="step-1">
+    <div class="question-number">Question 01 / 18 · Financial Capacity</div>
+    <div class="question-text">What is your current age?</div>
+    <div class="question-hint">Age determines your investment horizon and capacity to recover from losses.</div>
+    <input type="number" class="input-field" id="q1" placeholder="e.g. 35" min="18" max="100">
+    <div id="q1-error" class="error-msg" style="display:none">Please enter a valid age between 18 and 100.</div>
+  </div>
+
+  <!-- Q2+3 -->
+  <div class="step" id="step-2">
+    <div class="question-number">Question 02–03 / 18 · Financial Capacity</div>
+    <div class="question-text">What are your total savings and how much are you willing to invest?</div>
+    <div class="question-hint">A larger uninvested cushion means you can afford to take more risk with your invested capital.</div>
+    <div class="input-group">
+      <div>
+        <div class="input-label">Total liquid savings</div>
+        <div class="input-prefix"><span class="prefix-symbol">$</span><input type="number" id="q2" placeholder="e.g. 300,000" min="0"></div>
+      </div>
+      <div>
+        <div class="input-label">Amount willing to invest</div>
+        <div class="input-prefix"><span class="prefix-symbol">$</span><input type="number" id="q3" placeholder="e.g. 100,000" min="0"></div>
+      </div>
+    </div>
+    <div id="q23-error" class="error-msg" style="display:none">Please complete both fields. Investment cannot exceed savings.</div>
+  </div>
+
+  <!-- Q4: Income -->
+  <div class="step" id="step-3">
+    <div class="question-number">Question 04 / 18 · Financial Capacity</div>
+    <div class="question-text">What is your approximate monthly net income?</div>
+    <div class="question-hint">Higher income means a greater ability to replenish capital if investments underperform.</div>
+    <div class="options" id="q4-options">
+      <button class="option" onclick="selectOption('q4',2,this)"><div class="option-marker"></div><div class="option-text">Under $3,000</div></button>
+      <button class="option" onclick="selectOption('q4',4,this)"><div class="option-marker"></div><div class="option-text">$3,000 – $6,000</div></button>
+      <button class="option" onclick="selectOption('q4',6,this)"><div class="option-marker"></div><div class="option-text">$6,000 – $12,000</div></button>
+      <button class="option" onclick="selectOption('q4',8,this)"><div class="option-marker"></div><div class="option-text">$12,000 – $25,000</div></button>
+      <button class="option" onclick="selectOption('q4',10,this)"><div class="option-marker"></div><div class="option-text">Over $25,000</div></button>
+    </div>
+  </div>
+
+  <!-- Q5: Debt -->
+  <div class="step" id="step-4">
+    <div class="question-number">Question 05 / 18 · Financial Capacity</div>
+    <div class="question-text">What percentage of your monthly income goes toward debt repayments?</div>
+    <div class="question-hint">High debt obligations reduce your true capacity to absorb investment losses.</div>
+    <div class="options" id="q5-options">
+      <button class="option" onclick="selectOption('q5',10,this)"><div class="option-marker"></div><div class="option-text">None — I have no debt</div></button>
+      <button class="option" onclick="selectOption('q5',8,this)"><div class="option-marker"></div><div class="option-text">Under 15% of income</div></button>
+      <button class="option" onclick="selectOption('q5',5,this)"><div class="option-marker"></div><div class="option-text">15–30% of income</div></button>
+      <button class="option" onclick="selectOption('q5',2,this)"><div class="option-marker"></div><div class="option-text">30–50% of income</div></button>
+      <button class="option" onclick="selectOption('q5',0,this)"><div class="option-marker"></div><div class="option-text">Over 50% of income</div></button>
+    </div>
+  </div>
+
+  <!-- Q6: Dependents -->
+  <div class="step" id="step-5">
+    <div class="question-number">Question 06 / 18 · Financial Capacity</div>
+    <div class="question-text">How many financial dependents do you have?</div>
+    <div class="question-hint">Dependents increase the consequences of financial loss and reduce flexibility.</div>
+    <div class="options" id="q6-options">
+      <button class="option" onclick="selectOption('q6',10,this)"><div class="option-marker"></div><div class="option-text">None</div></button>
+      <button class="option" onclick="selectOption('q6',7,this)"><div class="option-marker"></div><div class="option-text">1 dependent</div></button>
+      <button class="option" onclick="selectOption('q6',4,this)"><div class="option-marker"></div><div class="option-text">2 dependents</div></button>
+      <button class="option" onclick="selectOption('q6',1,this)"><div class="option-marker"></div><div class="option-text">3 or more dependents</div></button>
+    </div>
+  </div>
+
+  <!-- Q7: Employment -->
+  <div class="step" id="step-6">
+    <div class="question-number">Question 07 / 18 · Financial Capacity</div>
+    <div class="question-text">How stable is your income?</div>
+    <div class="question-hint">Stable income means you can hold investments through downturns without being forced to sell.</div>
+    <div class="options" id="q7-options">
+      <button class="option" onclick="selectOption('q7',10,this)"><div class="option-marker"></div><div class="option-text">Very stable — government, tenured, or long-term contract</div></button>
+      <button class="option" onclick="selectOption('q7',7,this)"><div class="option-marker"></div><div class="option-text">Stable — established private sector employment</div></button>
+      <button class="option" onclick="selectOption('q7',4,this)"><div class="option-marker"></div><div class="option-text">Variable — self-employed, freelance, or commission-based</div></button>
+      <button class="option" onclick="selectOption('q7',1,this)"><div class="option-marker"></div><div class="option-text">Uncertain — startup, transitional, or between roles</div></button>
+    </div>
+  </div>
+
+  <!-- Q8: Emergency fund -->
+  <div class="step" id="step-7">
+    <div class="question-number">Question 08 / 18 · Financial Capacity</div>
+    <div class="question-text">Have you secured at least 6 months of living expenses as an emergency fund?</div>
+    <div class="question-hint">Without a buffer, a market downturn may force you to sell investments at the worst time.</div>
+    <div class="options" id="q8-options">
+      <button class="option" onclick="selectOption('q8',10,this)"><div class="option-marker"></div><div class="option-text">Yes — fully funded emergency reserve in place</div></button>
+      <button class="option" onclick="selectOption('q8',5,this)"><div class="option-marker"></div><div class="option-text">Partially — I have 2–3 months saved</div></button>
+      <button class="option" onclick="selectOption('q8',0,this)"><div class="option-marker"></div><div class="option-text">No — I do not have an emergency fund</div></button>
+    </div>
+  </div>
+
+  <!-- Q9: Goal -->
+  <div class="step" id="step-8">
+    <div class="question-number">Question 09 / 18 · Investment Preference</div>
+    <div class="question-text">What is the primary goal of this investment?</div>
+    <div class="question-hint">Your goal determines the appropriate return profile and risk level.</div>
+    <div class="options" id="q9-options">
+      <button class="option" onclick="selectOption('q9',2,this)"><div class="option-marker"></div><div class="option-text">Capital preservation — protect what I have</div></button>
+      <button class="option" onclick="selectOption('q9',4,this)"><div class="option-marker"></div><div class="option-text">Income generation — regular cash flow</div></button>
+      <button class="option" onclick="selectOption('q9',7,this)"><div class="option-marker"></div><div class="option-text">Balanced growth — income and appreciation</div></button>
+      <button class="option" onclick="selectOption('q9',10,this)"><div class="option-marker"></div><div class="option-text">Capital growth — maximum long-term appreciation</div></button>
+    </div>
+  </div>
+
+  <!-- Q10: Time horizon -->
+  <div class="step" id="step-9">
+    <div class="question-number">Question 10 / 18 · Investment Preference</div>
+    <div class="question-text">How long do you intend to remain invested?</div>
+    <div class="question-hint">A longer horizon is the single strongest indicator of risk capacity — time allows recovery from volatility.</div>
+    <div class="options" id="q10-options">
+      <button class="option" onclick="selectOption('q10',0,this)"><div class="option-marker"></div><div class="option-text">Less than 1 year</div></button>
+      <button class="option" onclick="selectOption('q10',3,this)"><div class="option-marker"></div><div class="option-text">1 to 3 years</div></button>
+      <button class="option" onclick="selectOption('q10',6,this)"><div class="option-marker"></div><div class="option-text">3 to 5 years</div></button>
+      <button class="option" onclick="selectOption('q10',8,this)"><div class="option-marker"></div><div class="option-text">5 to 10 years</div></button>
+      <button class="option" onclick="selectOption('q10',10,this)"><div class="option-marker"></div><div class="option-text">More than 10 years</div></button>
+    </div>
+  </div>
+
+  <!-- Q11: Liquidity -->
+  <div class="step" id="step-10">
+    <div class="question-number">Question 11 / 18 · Investment Preference</div>
+    <div class="question-text">How likely are you to need access to this money within the next 2 years?</div>
+    <div class="question-hint">Liquidity needs force premature selling, often at a loss during downturns.</div>
+    <div class="options" id="q11-options">
+      <button class="option" onclick="selectOption('q11',10,this)"><div class="option-marker"></div><div class="option-text">Very unlikely — this is strictly long-term capital</div></button>
+      <button class="option" onclick="selectOption('q11',7,this)"><div class="option-marker"></div><div class="option-text">Unlikely — but possible in an emergency</div></button>
+      <button class="option" onclick="selectOption('q11',3,this)"><div class="option-marker"></div><div class="option-text">Possible — I may need part of it</div></button>
+      <button class="option" onclick="selectOption('q11',0,this)"><div class="option-marker"></div><div class="option-text">Likely — I may need this capital soon</div></button>
+    </div>
+  </div>
+
+  <!-- Q12: Loss tolerance -->
+  <div class="step" id="step-11">
+    <div class="question-number">Question 12 / 18 · Behavioral</div>
+    <div class="question-text">What is the maximum portfolio loss you could tolerate before losing sleep?</div>
+    <div class="question-hint">Be honest — most investors overstate their tolerance before experiencing real losses.</div>
+    <div class="options" id="q12-options">
+      <button class="option" onclick="selectOption('q12',0,this)"><div class="option-marker"></div><div class="option-text">Up to 5% — any significant loss is unacceptable</div></button>
+      <button class="option" onclick="selectOption('q12',3,this)"><div class="option-marker"></div><div class="option-text">Up to 10%</div></button>
+      <button class="option" onclick="selectOption('q12',5,this)"><div class="option-marker"></div><div class="option-text">Up to 20%</div></button>
+      <button class="option" onclick="selectOption('q12',7,this)"><div class="option-marker"></div><div class="option-text">Up to 35%</div></button>
+      <button class="option" onclick="selectOption('q12',10,this)"><div class="option-marker"></div><div class="option-text">Over 35% — I understand deep drawdowns are part of high returns</div></button>
+    </div>
+  </div>
+
+  <!-- Q13: Reaction -->
+  <div class="step" id="step-12">
+    <div class="question-number">Question 13 / 18 · Behavioral</div>
+    <div class="question-text">Your portfolio drops 25% in three months. What do you do?</div>
+    <div class="question-hint">Answer based on what you would actually do — not what you think you should do. This is the most predictive question in the assessment.</div>
+    <div class="options" id="q13-options">
+      <button class="option" onclick="selectOption('q13',0,this)"><div class="option-marker"></div><div class="option-text">Sell everything immediately — cut my losses</div></button>
+      <button class="option" onclick="selectOption('q13',3,this)"><div class="option-marker"></div><div class="option-text">Sell some — reduce exposure and wait</div></button>
+      <button class="option" onclick="selectOption('q13',6,this)"><div class="option-marker"></div><div class="option-text">Do nothing — stay the course and wait for recovery</div></button>
+      <button class="option" onclick="selectOption('q13',10,this)"><div class="option-marker"></div><div class="option-text">Buy more — this is a buying opportunity</div></button>
+    </div>
+    <div class="consistency-warning" id="consistencyWarn">⚠️ Your answer here appears inconsistent with your stated loss tolerance. This is noted — we will apply the more conservative reading to protect your interests.</div>
+  </div>
+
+  <!-- Q14: Scenario -->
+  <div class="step" id="step-13">
+    <div class="question-number">Question 14 / 18 · Behavioral</div>
+    <div class="question-text">Which investment scenario best matches your expectations?</div>
+    <div class="options" id="q14-options">
+      <button class="option" onclick="selectOption('q14',0,this)"><div class="option-marker"></div><div><div class="option-text">Plan A — Best: +3%, Worst: −1%</div><div class="option-sub">Near-guaranteed preservation, minimal growth</div></div></button>
+      <button class="option" onclick="selectOption('q14',3,this)"><div class="option-marker"></div><div><div class="option-text">Plan B — Best: +8%, Worst: −5%</div><div class="option-sub">Conservative return with limited downside</div></div></button>
+      <button class="option" onclick="selectOption('q14',6,this)"><div class="option-marker"></div><div><div class="option-text">Plan C — Best: +15%, Worst: −12%</div><div class="option-sub">Balanced growth with meaningful drawdown risk</div></div></button>
+      <button class="option" onclick="selectOption('q14',8,this)"><div class="option-marker"></div><div><div class="option-text">Plan D — Best: +25%, Worst: −22%</div><div class="option-sub">Growth-oriented, requires strong conviction</div></div></button>
+      <button class="option" onclick="selectOption('q14',10,this)"><div class="option-marker"></div><div><div class="option-text">Plan E — Best: +40%, Worst: −35%</div><div class="option-sub">Aggressive — significant loss is a real possibility</div></div></button>
+    </div>
+  </div>
+
+  <!-- Q15: Past behavior -->
+  <div class="step" id="step-14">
+    <div class="question-number">Question 15 / 18 · Behavioral</div>
+    <div class="question-text">How did you respond during the last major market downturn you experienced?</div>
+    <div class="question-hint">Past behavior under stress is the strongest predictor of future behavior.</div>
+    <div class="options" id="q15-options">
+      <button class="option" onclick="selectOption('q15',0,this)"><div class="option-marker"></div><div class="option-text">I sold investments to stop further losses</div></button>
+      <button class="option" onclick="selectOption('q15',3,this)"><div class="option-marker"></div><div class="option-text">I was very stressed but held on</div></button>
+      <button class="option" onclick="selectOption('q15',6,this)"><div class="option-marker"></div><div class="option-text">I was uncomfortable but trusted my strategy</div></button>
+      <button class="option" onclick="selectOption('q15',8,this)"><div class="option-marker"></div><div class="option-text">I stayed calm and continued contributing</div></button>
+      <button class="option" onclick="selectOption('q15',10,this)"><div class="option-marker"></div><div class="option-text">I increased my investment during the downturn</div></button>
+    </div>
+  </div>
+
+  <!-- Q16: Self knowledge -->
+  <div class="step" id="step-15">
+    <div class="question-number">Question 16 / 18 · Investment Knowledge</div>
+    <div class="question-text">How would you describe your understanding of financial markets?</div>
+    <div class="options" id="q16-options">
+      <button class="option" onclick="selectOption('q16',2,this)"><div class="option-marker"></div><div class="option-text">Beginner — little to no investing experience</div></button>
+      <button class="option" onclick="selectOption('q16',5,this)"><div class="option-marker"></div><div class="option-text">Intermediate — I understand basic concepts and have some experience</div></button>
+      <button class="option" onclick="selectOption('q16',8,this)"><div class="option-marker"></div><div class="option-text">Advanced — I actively manage or have managed a portfolio</div></button>
+      <button class="option" onclick="selectOption('q16',10,this)"><div class="option-marker"></div><div class="option-text">Professional — I work in finance or have deep technical expertise</div></button>
+    </div>
+  </div>
+
+  <!-- Q17: Bond knowledge -->
+  <div class="step" id="step-16">
+    <div class="question-number">Question 17 / 18 · Investment Knowledge</div>
+    <div class="question-text">When interest rates rise, what typically happens to existing bond prices?</div>
+    <div class="question-hint">This is an objective question with a correct answer.</div>
+    <div class="options" id="q17-options">
+      <button class="option" onclick="selectOption('q17',0,this)"><div class="option-marker"></div><div class="option-text">Bond prices rise</div></button>
+      <button class="option" onclick="selectOption('q17',0,this)"><div class="option-marker"></div><div class="option-text">Bond prices are unaffected</div></button>
+      <button class="option" onclick="selectOption('q17',10,this)"><div class="option-marker"></div><div class="option-text">Bond prices fall</div></button>
+      <button class="option" onclick="selectOption('q17',0,this)"><div class="option-marker"></div><div class="option-text">I'm not sure</div></button>
+    </div>
+  </div>
+
+  <!-- Q18: Diversification knowledge -->
+  <div class="step" id="step-17">
+    <div class="question-number">Question 18 / 18 · Investment Knowledge</div>
+    <div class="question-text">Which best describes portfolio diversification?</div>
+    <div class="options" id="q18-options">
+      <button class="option" onclick="selectOption('q18',0,this)"><div class="option-marker"></div><div class="option-text">Investing only in the highest-performing asset class</div></button>
+      <button class="option" onclick="selectOption('q18',0,this)"><div class="option-marker"></div><div class="option-text">Holding many stocks within a single sector</div></button>
+      <button class="option" onclick="selectOption('q18',10,this)"><div class="option-marker"></div><div class="option-text">Spreading investments across uncorrelated asset classes to reduce overall risk</div></button>
+      <button class="option" onclick="selectOption('q18',0,this)"><div class="option-marker"></div><div class="option-text">Moving money between assets based on market timing</div></button>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div class="step results-page" id="step-18">
+    <div class="results-hero">
+      <div class="score-ring">
+        <svg viewBox="0 0 150 150" width="170" height="170">
+          <circle class="score-ring-bg" cx="75" cy="75" r="70"/>
+          <circle class="score-ring-fill" id="ringFill" cx="75" cy="75" r="70"/>
+        </svg>
+        <div class="score-center">
+          <div class="score-number" id="finalScore">—</div>
+          <div class="score-denom">out of 10</div>
+        </div>
+      </div>
+      <div class="result-profile" id="resultLabel">—</div>
+      <div class="result-desc" id="resultDesc">—</div>
+    </div>
+
+    <div class="consistency-alert" id="consistencyAlert">
+      ⚠️ <strong>Consistency note:</strong> Your stated loss tolerance and behavioral response to a 25% drawdown were contradictory. In line with best practice, we have applied the more conservative reading to protect your interests. We recommend discussing this with a qualified financial advisor.
+    </div>
+
+    <div class="breakdown-card" style="margin-bottom:2rem">
+      <div class="section-heading">Capacity vs. Appetite</div>
+      <div class="dual-score-grid">
+        <div class="dual-score-card">
+          <div class="ds-label">Risk Capacity</div>
+          <div class="ds-value" id="capacityScore">—</div>
+          <div class="ds-desc">What you can financially afford to lose</div>
+        </div>
+        <div class="dual-score-card">
+          <div class="ds-label">Risk Appetite</div>
+          <div class="ds-value" id="appetiteScore">—</div>
+          <div class="ds-desc">What you are emotionally comfortable losing</div>
+        </div>
+      </div>
+      <div style="padding:0 1.4rem 1.2rem;font-size:0.8rem;color:var(--muted);line-height:1.6;">
+        Your final profile is based on the <strong>lower</strong> of these two scores — following institutional best practice.
+      </div>
+    </div>
+
+    <div class="breakdown-card">
+      <div class="section-heading">Score Breakdown</div>
+      <div id="breakdownRows"></div>
+    </div>
+
+    <div class="portfolio-card">
+      <div class="section-heading">Suggested Portfolio Allocation</div>
+      <div class="portfolio-grid" id="portfolioGrid"></div>
+    </div>
+
+    <div class="breakdown-card">
+      <div class="section-heading">Geographic Diversification</div>
+      <div id="geoRows"></div>
+    </div>
+
+    <div class="rationale-box" id="rationaleBox"></div>
+
+    <div class="disclaimer">
+      This assessment is for informational and educational purposes only. It does not constitute financial advice, a solicitation, or a recommendation to buy or sell any security. All investments carry risk including the possible loss of principal. Past performance is not indicative of future results. Please consult a qualified financial advisor before making any investment decisions.
+    </div>
+
+    <button class="btn btn-ghost" onclick="restart()" style="margin:0 auto;display:flex;">Retake Assessment</button>
+  </div>
+
+  <div class="nav" id="navButtons">
+    <button class="btn btn-ghost" id="prevBtn" onclick="prevStep()" style="display:none">← Back</button>
+    <div></div>
+    <button class="btn btn-primary" id="nextBtn" onclick="nextStep()">Continue →</button>
+  </div>
+</div>
+</div>
+
+<script>
+const answers = {};
+let currentStep = 1;
+const TOTAL = 18;
+let consistencyFlagged = false;
+
+function scoreQ1(age) {
+  if (age < 30) return 10;
+  if (age <= 40) return 8;
+  if (age <= 50) return 5;
+  if (age <= 60) return 2;
+  return 0;
+}
+
+function scoreQ23(savings, invest) {
+  const r = invest / savings;
+  if (r < 0.20) return 10;
+  if (r <= 0.40) return 8;
+  if (r <= 0.60) return 5;
+  if (r <= 0.80) return 2;
+  return 0;
+}
+
+function computeScore() {
+  const s = {
+    age:     scoreQ1(Number(answers.q1)),
+    invest:  scoreQ23(Number(answers.q2), Number(answers.q3)),
+    income:  answers.q4  ?? 0,
+    debt:    answers.q5  ?? 0,
+    dep:     answers.q6  ?? 0,
+    employ:  answers.q7  ?? 0,
+    emerg:   answers.q8  ?? 0,
+    goal:    answers.q9  ?? 0,
+    horizon: answers.q10 ?? 0,
+    liquid:  answers.q11 ?? 0,
+    loss:    answers.q12 ?? 0,
+    react:   answers.q13 ?? 0,
+    scenario:answers.q14 ?? 0,
+    past:    answers.q15 ?? 0,
+    selfk:   answers.q16 ?? 0,
+    bondk:   answers.q17 ?? 0,
+    divk:    answers.q18 ?? 0,
+  };
+
+  consistencyFlagged = (s.loss >= 7 && s.react <= 3);
+  const bLoss  = consistencyFlagged ? Math.min(s.loss, s.react) : s.loss;
+  const bReact = consistencyFlagged ? Math.min(s.loss, s.react) : s.react;
+
+  const capacityItems = [
+    { label: 'Age',               score: s.age,    weight: 0.15 },
+    { label: 'Investment Ratio',  score: s.invest,  weight: 0.10 },
+    { label: 'Monthly Income',    score: s.income,  weight: 0.15 },
+    { label: 'Debt Obligations',  score: s.debt,    weight: 0.15 },
+    { label: 'Dependents',        score: s.dep,     weight: 0.10 },
+    { label: 'Income Stability',  score: s.employ,  weight: 0.15 },
+    { label: 'Emergency Fund',    score: s.emerg,   weight: 0.20 },
+  ];
+
+  const appetiteItems = [
+    { label: 'Investment Goal',   score: s.goal,    weight: 0.10 },
+    { label: 'Time Horizon',      score: s.horizon, weight: 0.20 },
+    { label: 'Liquidity Needs',   score: s.liquid,  weight: 0.10 },
+    { label: 'Loss Tolerance',    score: bLoss,     weight: 0.15 },
+    { label: 'Drawdown Reaction', score: bReact,    weight: 0.20 },
+    { label: 'Risk Scenario',     score: s.scenario,weight: 0.10 },
+    { label: 'Past Behavior',     score: s.past,    weight: 0.10 },
+    { label: 'Knowledge (self)',  score: s.selfk,   weight: 0.03 },
+    { label: 'Knowledge (bonds)', score: s.bondk,   weight: 0.035},
+    { label: 'Knowledge (divers)',score: s.divk,    weight: 0.035},
+  ];
+
+  const capacityScore = capacityItems.reduce((a, r) => a + r.score * r.weight, 0);
+  const appetiteScore = appetiteItems.reduce((a, r) => a + r.score * r.weight, 0);
+  const finalScore    = Math.min(capacityScore, appetiteScore);
+
+  return { finalScore, capacityScore, appetiteScore, breakdown: [...capacityItems, ...appetiteItems] };
+}
+
+function getProfile(score) {
+  const profiles = [
+    {
+      max: 2, label: 'Conservative',
+      desc: 'Capital preservation is your priority. Your financial circumstances and behavioral profile indicate that significant market volatility would be both financially and emotionally damaging. Your portfolio should prioritise stability, income, and capital protection above growth.',
+      portfolio: [
+        { asset: 'Bonds (Short–Medium Duration)', weight: 45 },
+        { asset: 'Equities (Dividend / Low Vol)',  weight: 20 },
+        { asset: 'Gold',                           weight: 12 },
+        { asset: 'REITs',                          weight: 10 },
+        { asset: 'Cash / Money Market',            weight: 13 },
+      ],
+      geo: [
+        { region: 'Domestic',                        pct: 65 },
+        { region: 'Developed International',          pct: 25 },
+        { region: 'Emerging Markets',                 pct: 10 },
+      ],
+      rationale: 'A Conservative portfolio protects principal above all else. The heavy bond allocation provides stable income in the current higher-rate environment, while gold acts as an inflation and crisis hedge. Equity exposure is limited to dividend-paying, low-volatility names. No private equity or crypto given illiquidity risk and drawdown potential.'
+    },
+    {
+      max: 4, label: 'Moderately Conservative',
+      desc: 'You can tolerate modest volatility in pursuit of returns that meaningfully outpace inflation. Your portfolio leans toward stability but introduces selective equity and alternative exposure to build wealth without excessive risk.',
+      portfolio: [
+        { asset: 'Bonds (Blended Duration)',           weight: 35 },
+        { asset: 'Equities (Value + Dividend)',         weight: 28 },
+        { asset: 'REITs',                              weight: 12 },
+        { asset: 'Gold',                               weight: 10 },
+        { asset: 'Private Credit (Liquid Alts)',        weight: 10 },
+        { asset: 'Cash',                               weight: 5  },
+      ],
+      geo: [
+        { region: 'Domestic',                         pct: 55 },
+        { region: 'Developed International',           pct: 30 },
+        { region: 'Emerging Markets',                  pct: 15 },
+      ],
+      rationale: 'A Moderately Conservative portfolio delivers real returns above inflation while keeping drawdown risk contained. Bonds remain the anchor. REITs offer income with inflation protection. Private credit via liquid alternatives provides yield premium without full illiquidity risk. No crypto — the volatility profile is inconsistent with this risk band.'
+    },
+    {
+      max: 6, label: 'Moderate',
+      desc: 'You have a balanced risk profile — comfortable with meaningful short-term volatility in exchange for solid long-term growth. Your portfolio is diversified across asset classes with a tilt toward growth, while maintaining defensive ballast.',
+      portfolio: [
+        { asset: 'Equities (Diversified Global)',      weight: 42 },
+        { asset: 'Bonds (Blended)',                    weight: 22 },
+        { asset: 'REITs',                              weight: 12 },
+        { asset: 'Private Equity / Credit',            weight: 12 },
+        { asset: 'Gold',                               weight: 7  },
+        { asset: 'Crypto',                             weight: 3  },
+        { asset: 'Cash',                               weight: 2  },
+      ],
+      geo: [
+        { region: 'Domestic',                         pct: 45 },
+        { region: 'Developed International',           pct: 35 },
+        { region: 'Emerging Markets',                  pct: 18 },
+        { region: 'Frontier Markets',                  pct: 2  },
+      ],
+      rationale: 'A Moderate portfolio is genuinely diversified — equity is the growth engine, bonds provide stability during risk-off periods, and alternatives enhance the return profile. A small crypto allocation (3%) provides asymmetric upside without meaningfully increasing overall volatility. Geographic diversification into EM captures structural growth.'
+    },
+    {
+      max: 8, label: 'Moderately Aggressive',
+      desc: 'You have strong risk capacity and appetite. You understand that significant drawdowns are the price of superior long-term returns and have the financial foundation to remain invested through market stress.',
+      portfolio: [
+        { asset: 'Equities (Growth + International)',  weight: 55 },
+        { asset: 'Private Equity',                     weight: 15 },
+        { asset: 'Bonds (Short Duration)',             weight: 8  },
+        { asset: 'REITs',                              weight: 8  },
+        { asset: 'Crypto',                             weight: 7  },
+        { asset: 'Gold',                               weight: 5  },
+        { asset: 'Cash',                               weight: 2  },
+      ],
+      geo: [
+        { region: 'Domestic',                         pct: 35 },
+        { region: 'Developed International',           pct: 30 },
+        { region: 'Emerging Markets',                  pct: 28 },
+        { region: 'Frontier Markets',                  pct: 7  },
+      ],
+      rationale: 'A Moderately Aggressive portfolio is equity-dominant and globally diversified with meaningful EM and frontier exposure. Private equity targets the illiquidity premium over a 5–7 year horizon. Crypto at 7% reflects a genuine satellite position. Bond exposure is minimal and short-duration — serving as a tactical buffer only.'
+    },
+    {
+      max: 10, label: 'Aggressive',
+      desc: 'You have both the financial capacity and behavioral resilience to withstand severe drawdowns. You are pursuing maximum long-term wealth creation and understand the associated risks at an institutional level.',
+      portfolio: [
+        { asset: 'Equities (Growth / Small Cap / EM)', weight: 60 },
+        { asset: 'Private Equity / Venture',           weight: 18 },
+        { asset: 'Crypto',                             weight: 10 },
+        { asset: 'REITs',                              weight: 5  },
+        { asset: 'Gold',                               weight: 4  },
+        { asset: 'Cash',                               weight: 3  },
+      ],
+      geo: [
+        { region: 'Domestic',                         pct: 25 },
+        { region: 'Developed International',           pct: 28 },
+        { region: 'Emerging Markets',                  pct: 35 },
+        { region: 'Frontier Markets',                  pct: 12 },
+      ],
+      rationale: 'An Aggressive portfolio is unambiguously growth-oriented. Equity is the core driver with a deliberate tilt toward higher-beta segments — small cap, EM, and growth. Private equity and venture capital target illiquidity premium and pre-public value creation. Crypto at 10% acknowledges both its volatility and its role as a non-correlated asymmetric asset. Geographic weighting heavily favors EM and frontier markets where structural growth tailwinds are strongest.'
+    },
+  ];
+  return profiles.find(p => score < p.max) || profiles[profiles.length - 1];
+}
+
+function showResults() {
+  const { finalScore, capacityScore, appetiteScore, breakdown } = computeScore();
+  const profile = getProfile(finalScore);
+  const C = 2 * Math.PI * 70;
+
+  document.getElementById('finalScore').textContent   = finalScore.toFixed(1);
+  document.getElementById('resultLabel').textContent  = profile.label;
+  document.getElementById('resultDesc').textContent   = profile.desc;
+  document.getElementById('capacityScore').textContent = capacityScore.toFixed(1);
+  document.getElementById('appetiteScore').textContent = appetiteScore.toFixed(1);
+
+  const ring = document.getElementById('ringFill');
+  ring.style.strokeDasharray  = C;
+  ring.style.strokeDashoffset = C;
+  setTimeout(() => { ring.style.strokeDashoffset = C - (C * finalScore / 10); }, 120);
+
+  if (consistencyFlagged) document.getElementById('consistencyAlert').style.display = 'block';
+
+  const bCont = document.getElementById('breakdownRows');
+  bCont.innerHTML = '';
+  breakdown.forEach(r => {
+    const d = document.createElement('div');
+    d.className = 'breakdown-row';
+    d.innerHTML = `<span class="breakdown-q">${r.label}</span><div class="breakdown-bar-wrap"><div class="breakdown-bar" style="width:${(r.score/10)*100}%"></div></div><span class="breakdown-score">${r.score.toFixed(0)}<small style="font-size:0.6rem;color:var(--muted)">/10</small></span>`;
+    bCont.appendChild(d);
+  });
+
+  const pGrid = document.getElementById('portfolioGrid');
+  pGrid.innerHTML = '';
+  profile.portfolio.forEach(p => {
+    const d = document.createElement('div');
+    d.className = 'portfolio-item';
+    d.innerHTML = `<div class="pi-asset">${p.asset}</div><div class="pi-weight">${p.weight}%</div><div class="pi-bar-wrap"><div class="pi-bar" style="width:${p.weight}%"></div></div>`;
+    pGrid.appendChild(d);
+  });
+
+  const gCont = document.getElementById('geoRows');
+  gCont.innerHTML = '';
+  profile.geo.forEach(g => {
+    const d = document.createElement('div');
+    d.className = 'geo-row';
+    d.innerHTML = `<span class="geo-label">${g.region}</span><div class="geo-bar-wrap"><div class="geo-bar" style="width:${g.pct}%"></div></div><span class="geo-pct">${g.pct}%</span>`;
+    gCont.appendChild(d);
+  });
+
+  document.getElementById('rationaleBox').textContent = profile.rationale;
+}
+
+function selectOption(key, value, el) {
+  answers[key] = value;
+  el.parentElement.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+
+  if (key === 'q13') {
+    const flagged = ((answers.q12 ?? 0) >= 7 && value <= 3);
+    document.getElementById('consistencyWarn').style.display = flagged ? 'block' : 'none';
+  }
+
+  if (key === 'q18') {
+    setTimeout(() => {
+      showResults();
+      document.getElementById(`step-${currentStep}`).classList.remove('active');
+      document.getElementById('step-18').classList.add('active');
+      document.getElementById('navButtons').style.display = 'none';
+      updateProgress(18);
+    }, 450);
+  }
+}
+
+function validate() {
+  document.querySelectorAll('.error-msg').forEach(e => e.style.display = 'none');
+  if (currentStep === 1) {
+    const age = Number(document.getElementById('q1').value);
+    if (!age || age < 18 || age > 100) { document.getElementById('q1-error').style.display = 'block'; return false; }
+    answers.q1 = age;
+  }
+  if (currentStep === 2) {
+    const sv = Number(document.getElementById('q2').value);
+    const iv = Number(document.getElementById('q3').value);
+    if (!sv || !iv || iv > sv) { document.getElementById('q23-error').style.display = 'block'; return false; }
+    answers.q2 = sv; answers.q3 = iv;
+  }
+  const map = { 3:'q4',4:'q5',5:'q6',6:'q7',7:'q8',8:'q9',9:'q10',10:'q11',11:'q12',12:'q13',13:'q14',14:'q15',15:'q16',16:'q17',17:'q18' };
+  if (map[currentStep] && answers[map[currentStep]] === undefined) return false;
+  return true;
+}
+
+function nextStep() {
+  if (!validate()) return;
+  if (currentStep === TOTAL) return;
+  document.getElementById(`step-${currentStep}`).classList.remove('active');
+  currentStep++;
+  document.getElementById(`step-${currentStep}`).classList.add('active');
+  updateProgress(currentStep - 1);
+  document.getElementById('prevBtn').style.display = currentStep > 1 ? 'flex' : 'none';
+  document.getElementById('nextBtn').style.display = currentStep === TOTAL ? 'none' : 'flex';
+}
+
+function prevStep() {
+  document.getElementById(`step-${currentStep}`).classList.remove('active');
+  currentStep--;
+  document.getElementById(`step-${currentStep}`).classList.add('active');
+  updateProgress(currentStep - 1);
+  document.getElementById('prevBtn').style.display = currentStep > 1 ? 'flex' : 'none';
+  document.getElementById('nextBtn').style.display = 'flex';
+}
+
+function updateProgress(done) {
+  document.getElementById('progressFill').style.width = (done / TOTAL * 100) + '%';
+  document.getElementById('progressCount').textContent = `${done} of ${TOTAL}`;
+}
+
+function restart() {
+  Object.keys(answers).forEach(k => delete answers[k]);
+  consistencyFlagged = false;
+  document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+  document.querySelectorAll('input[type=number]').forEach(i => i.value = '');
+  document.getElementById('consistencyWarn').style.display = 'none';
+  document.getElementById('consistencyAlert').style.display = 'none';
+  currentStep = 1;
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.getElementById('step-1').classList.add('active');
+  document.getElementById('navButtons').style.display = 'flex';
+  document.getElementById('prevBtn').style.display = 'none';
+  document.getElementById('nextBtn').style.display = 'flex';
+  updateProgress(0);
+}
+</script>
+</body>
+</html>
