@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Price Waterfall Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --cream: #f7f4ef;
+  --cream2: #ede9e2;
+  --ink: #1a1814;
+  --ink2: #3d3a35;
+  --ink3: #7a766e;
+  --ink4: #b0aca4;
+  --gold: #b8913a;
+  --gold-light: #f5e9ce;
+  --border: #ddd8cf;
+  --white: #ffffff;
+  --red-soft: #c0522a;
+  --green: #2d6a4f;
+  --green-light: #e8f5ee;
+  --green-border: #b7dfc9;
+  --ff-serif: 'Playfair Display', Georgia, serif;
+  --ff-sans: 'Jost', sans-serif;
+}
+
+body {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: var(--ff-sans);
+  font-weight: 300;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 3.5rem 2rem 5rem;
+}
+
+.masthead { text-align: center; margin-bottom: 3rem; }
+.masthead-rule { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem; }
+.masthead-rule::before, .masthead-rule::after { content: ''; flex: 1; height: 1px; background: var(--gold); opacity: 0.4; }
+.masthead-rule span { font-size: 9.5px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); }
+h1 { font-family: var(--ff-serif); font-size: 1.9rem; font-weight: 400; letter-spacing: 0.01em; margin-bottom: 0.5rem; }
+.tagline { font-size: 12.5px; color: var(--ink3); letter-spacing: 0.03em; }
+
+/* Tabs */
+.tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border: 1px solid var(--border);
+  background: var(--white);
+}
+.tab-btn {
+  padding: 0.8rem 0.5rem;
+  font-family: var(--ff-sans);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink3);
+  background: transparent;
+  border: none;
+  border-right: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+}
+.tab-btn:last-child { border-right: none; }
+.tab-btn:hover { background: var(--cream); color: var(--ink); }
+.tab-btn.active { background: var(--ink); color: var(--white); font-weight: 500; }
+
+.tab-context {
+  font-size: 11.5px;
+  color: var(--ink3);
+  background: var(--cream2);
+  border: 1px solid var(--border);
+  border-top: none;
+  padding: 0.65rem 1.25rem;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+.tab-context strong { color: var(--gold); font-weight: 500; }
+
+/* Input grid */
+.grid { background: var(--white); border: 1px solid var(--border); margin-bottom: 2rem; }
+
+.section-bar {
+  padding: 0.5rem 1.25rem;
+  background: var(--cream2);
+  border-bottom: 1px solid var(--border);
+  font-size: 9.5px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink3);
+}
+
+.cells { display: grid; grid-template-columns: 1fr 1fr; }
+@media (max-width: 480px) { .cells { grid-template-columns: 1fr; } }
+
+.cell {
+  padding: 0.95rem 1.25rem;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.cell:nth-child(even) { border-right: none; }
+.cell.span2 { grid-column: 1 / -1; border-right: none; }
+.cells.last-cells .cell { border-bottom: none; }
+
+.cell-label {
+  font-size: 9.5px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink4);
+  margin-bottom: 8px;
+}
+.input-row { display: flex; align-items: center; gap: 6px; }
+.sym { font-size: 12px; color: var(--ink3); flex-shrink: 0; }
+
+input[type="number"] {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1.5px solid var(--border);
+  padding: 3px 0;
+  font-family: var(--ff-sans);
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.2s;
+  -moz-appearance: textfield;
+}
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+input[type="number"]:focus { border-color: var(--gold); }
+input[type="number"]::placeholder { color: var(--ink4); }
+
+.tax-row-inner { display: flex; align-items: flex-end; gap: 1rem; flex-wrap: wrap; }
+.tax-input-part { display: flex; align-items: center; gap: 6px; min-width: 80px; }
+.relief-pills { display: flex; gap: 4px; padding-bottom: 2px; flex-shrink: 0; }
+.pill {
+  padding: 3px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--ink3);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.12s;
+  white-space: nowrap;
+}
+.pill:hover { border-color: var(--gold); color: var(--gold); }
+.pill.active { background: var(--gold); border-color: var(--gold); color: var(--white); font-weight: 500; }
+
+.cell.active-input { background: var(--gold-light); }
+.cell.active-input .cell-label { color: var(--gold); }
+.cell.active-input input { border-bottom-color: var(--gold); }
+
+/* Waterfall */
+.wf-label {
+  font-size: 9.5px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.wf-label::after { content: ''; flex: 1; height: 1px; background: var(--gold); opacity: 0.3; }
+
+.waterfall { background: var(--white); border: 1px solid var(--border); }
+
+.wf-row {
+  display: grid;
+  grid-template-columns: 1fr 56px 120px;
+  align-items: baseline;
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  gap: 0.5rem;
+}
+.wf-row:last-child { border-bottom: none; }
+.wf-row.row-retail { background: var(--ink); color: var(--white); }
+.wf-row.row-group  { background: var(--cream2); padding: 0.4rem 1.25rem; }
+.wf-row.row-result { background: var(--gold-light); border-top: 1.5px solid var(--gold); }
+
+/* Margin earned block */
+.wf-row.row-sells-at  { background: var(--white); }
+.wf-row.row-buys-at   { background: var(--white); }
+.wf-row.row-margin-earned {
+  background: var(--green-light);
+  border-top: 1.5px solid var(--green-border);
+  border-bottom: none;
+}
+
+.wf-name { font-size: 13px; font-weight: 300; }
+.wf-name.muted      { color: var(--ink3); }
+.wf-name.group-hd   { font-size: 9.5px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink3); }
+.wf-name.result-lbl { font-weight: 500; color: var(--ink); }
+.wf-name.green-lbl  { font-weight: 500; color: var(--green); }
+.wf-row.row-retail .wf-name { font-weight: 400; }
+
+.wf-pct { font-size: 11px; color: var(--ink4); text-align: right; }
+.wf-row.row-retail .wf-pct        { color: rgba(255,255,255,0.4); }
+.wf-row.row-result .wf-pct        { color: var(--ink3); }
+.wf-row.row-margin-earned .wf-pct { color: var(--green); opacity: 0.7; }
+
+.wf-amt { font-size: 14px; font-weight: 400; text-align: right; font-variant-numeric: tabular-nums; }
+.wf-amt.neg   { color: var(--red-soft); }
+.wf-amt.green { color: var(--green); font-weight: 500; font-size: 15px; }
+.wf-row.row-retail .wf-amt { font-size: 15px; font-weight: 500; }
+.wf-row.row-result .wf-amt { font-size: 15px; font-weight: 500; color: var(--gold); }
+
+.hint { text-align: center; font-size: 11px; color: var(--ink4); letter-spacing: 0.04em; margin-top: 1.5rem; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="masthead">
+    <div class="masthead-rule"><span>Commercial Finance</span></div>
+    <h1>Price Waterfall Calculator</h1>
+    <p class="tagline">Choose your perspective — enter your margin — see your implied price</p>
+  </header>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="setTab('manufacturer',this)">Manufacturer</button>
+    <button class="tab-btn"        onclick="setTab('importer',this)">Importer</button>
+    <button class="tab-btn"        onclick="setTab('distributor',this)">Distributor</button>
+    <button class="tab-btn"        onclick="setTab('retailer',this)">Retailer</button>
+  </div>
+  <div class="tab-context" id="tab-context"></div>
+
+  <div class="grid">
+
+    <div class="section-bar">Retail</div>
+    <div class="cells">
+      <div class="cell span2">
+        <div class="cell-label">Retail Price (market)</div>
+        <div class="input-row">
+          <span class="sym">PKR</span>
+          <input type="number" id="retail" value="2700" oninput="calc()">
+        </div>
+      </div>
+    </div>
+
+    <div class="section-bar">Government — Taxes &amp; Duties</div>
+    <div class="cells">
+      <div class="cell span2">
+        <div class="cell-label">GST / Sales Tax — rate &amp; relief</div>
+        <div class="tax-row-inner">
+          <div class="tax-input-part">
+            <input type="number" id="gst" value="18" oninput="calc()">
+            <span class="sym">%</span>
+          </div>
+          <div class="relief-pills" id="pills-gst">
+            <button class="pill" onclick="setRelief('gst',1,this)">100%</button>
+            <button class="pill active" onclick="setRelief('gst',0.5,this)">50%</button>
+            <button class="pill" onclick="setRelief('gst',0,this)">0%</button>
+          </div>
+        </div>
+      </div>
+      <div class="cell span2">
+        <div class="cell-label">Customs Duty — rate &amp; relief</div>
+        <div class="tax-row-inner">
+          <div class="tax-input-part">
+            <input type="number" id="cd" value="20" oninput="calc()">
+            <span class="sym">%</span>
+          </div>
+          <div class="relief-pills" id="pills-cd">
+            <button class="pill" onclick="setRelief('cd',1,this)">100%</button>
+            <button class="pill active" onclick="setRelief('cd',0.5,this)">50%</button>
+            <button class="pill" onclick="setRelief('cd',0,this)">0%</button>
+          </div>
+        </div>
+      </div>
+      <div class="cell span2">
+        <div class="cell-label">Federal Excise Duty (FED) — PKR per unit &amp; relief</div>
+        <div class="tax-row-inner">
+          <div class="tax-input-part">
+            <span class="sym">PKR</span>
+            <input type="number" id="fed" value="300" oninput="calc()">
+          </div>
+          <div class="relief-pills" id="pills-fed">
+            <button class="pill" onclick="setRelief('fed',1,this)">100%</button>
+            <button class="pill active" onclick="setRelief('fed',0.5,this)">50%</button>
+            <button class="pill" onclick="setRelief('fed',0,this)">0%</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-bar">Channel Margins</div>
+    <div class="cells last-cells">
+      <div class="cell" id="cell-ret-front">
+        <div class="cell-label">Retailer Front-End Margin</div>
+        <div class="input-row">
+          <input type="number" id="ret_front" value="15" oninput="calc()">
+          <span class="sym">%</span>
+        </div>
+      </div>
+      <div class="cell" id="cell-ret-back">
+        <div class="cell-label">Retailer Back-End Margin</div>
+        <div class="input-row">
+          <input type="number" id="ret_back" value="5" oninput="calc()">
+          <span class="sym">%</span>
+        </div>
+      </div>
+      <div class="cell" id="cell-dist">
+        <div class="cell-label">Distributor Margin</div>
+        <div class="input-row">
+          <input type="number" id="dist" value="8" oninput="calc()">
+          <span class="sym">%</span>
+        </div>
+      </div>
+      <div class="cell" id="cell-imp">
+        <div class="cell-label">Importer Margin</div>
+        <div class="input-row">
+          <input type="number" id="imp" value="10" oninput="calc()">
+          <span class="sym">%</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="wf-label">Breakdown</div>
+  <div class="waterfall" id="waterfall"></div>
+  <p class="hint">Each margin is applied to the value remaining after the layer above it</p>
+
+</div>
+
+<script>
+const relief = { gst: 0.5, cd: 0.5, fed: 0.5 };
+
+const TABS = {
+  manufacturer: {
+    highlight: ['cell-ret-front','cell-ret-back','cell-dist','cell-imp'],
+    context: 'Perspective: <strong>Manufacturer</strong>. All channel margins are stripped out of the retail price to reveal your <strong>implied ex-factory price</strong>.',
+    resultLabel: 'Manufacturer Price',
+  },
+  importer: {
+    highlight: ['cell-imp'],
+    context: 'Perspective: <strong>Importer</strong>. You buy from the manufacturer and sell to the distributor. Enter your margin to see your buy-in price — and the absolute margin you earn.',
+    resultLabel: 'Importer Buy-In Price (pays manufacturer)',
+  },
+  distributor: {
+    highlight: ['cell-dist'],
+    context: 'Perspective: <strong>Distributor</strong>. You buy from the importer and sell to the retailer. Enter your margin to see your cost price — and the absolute margin you earn.',
+    resultLabel: 'Distributor Cost Price (pays importer)',
+  },
+  retailer: {
+    highlight: ['cell-ret-front','cell-ret-back'],
+    context: 'Perspective: <strong>Retailer</strong>. You buy from the distributor and sell to the consumer. Enter your margins to see your buy price — and the total margin you earn.',
+    resultLabel: 'Retailer Buy Price (pays distributor)',
+  },
+};
+
+let activeTab = 'manufacturer';
+
+function setTab(tab, btn) {
+  activeTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  updateTabUI();
+  calc();
+}
+
+function updateTabUI() {
+  const cfg = TABS[activeTab];
+  document.getElementById('tab-context').innerHTML = cfg.context;
+  ['cell-ret-front','cell-ret-back','cell-dist','cell-imp'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('active-input', cfg.highlight.includes(id));
+  });
+}
+
+function setRelief(tax, val, btn) {
+  relief[tax] = val;
+  btn.closest('.relief-pills').querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  calc();
+}
+
+function v(id) { return parseFloat(document.getElementById(id).value) || 0; }
+function fmt(n) { return 'PKR\u00a0' + Math.round(n).toLocaleString(); }
+function pctOf(n, total) { return total ? (n / total * 100).toFixed(1) + '%' : '—'; }
+function relLabel(r) { return r === 1 ? '100%' : r === 0 ? '0%' : '50%'; }
+
+function row(type, name, amt, pct) {
+  return { type, name, amt, pct };
+}
+
+function calc() {
+  const retail    = v('retail');
+  const gst_rate  = v('gst') / 100;
+  const cd_rate   = v('cd') / 100;
+  const fed_abs   = v('fed');
+  const ret_front = v('ret_front') / 100;
+  const ret_back  = v('ret_back') / 100;
+  const dist_rate = v('dist') / 100;
+  const imp_rate  = v('imp') / 100;
+
+  const gst_eff   = retail * gst_rate * relief.gst;
+  const cd_eff    = retail * cd_rate  * relief.cd;
+  const fed_eff   = fed_abs           * relief.fed;
+
+  const post_tax  = retail - gst_eff - cd_eff - fed_eff;
+
+  // Cascade down
+  const rf_amt    = post_tax * ret_front;
+  const after_rf  = post_tax - rf_amt;
+  const rb_amt    = after_rf * ret_back;
+  const after_rb  = after_rf - rb_amt;   // retailer's buy price = distributor's sell price
+  const dist_amt  = after_rb * dist_rate;
+  const after_dist= after_rb - dist_amt; // distributor's buy price = importer's sell price
+  const imp_amt   = after_dist * imp_rate;
+  const manuf     = after_dist - imp_amt; // manufacturer's price = importer's buy price
+
+  const cfg = TABS[activeTab];
+
+  const rows = [
+    { type: 'retail', name: 'Retail Price', amt: retail },
+    { type: 'group',  name: 'Government' },
+    { type: 'deduct', name: `GST / Sales Tax (${v('gst')}%  ·  ${relLabel(relief.gst)} applied)`,  amt: gst_eff },
+    { type: 'deduct', name: `Customs Duty (${v('cd')}%  ·  ${relLabel(relief.cd)} applied)`,        amt: cd_eff  },
+    { type: 'deduct', name: `Federal Excise Duty (PKR ${fed_abs.toLocaleString()}  ·  ${relLabel(relief.fed)} applied)`, amt: fed_eff },
+    { type: 'group',  name: 'Channel' },
+  ];
+
+  if (activeTab !== 'retailer') {
+    rows.push({ type: 'deduct', name: `Retailer front-end margin (${v('ret_front')}%)`, amt: rf_amt });
+    rows.push({ type: 'deduct', name: `Retailer back-end margin (${v('ret_back')}%)`,   amt: rb_amt });
+  }
+  if (activeTab !== 'retailer' && activeTab !== 'distributor') {
+    rows.push({ type: 'deduct', name: `Distributor margin (${v('dist')}%)`, amt: dist_amt });
+  }
+  if (activeTab === 'manufacturer') {
+    rows.push({ type: 'deduct', name: `Importer margin (${v('imp')}%)`, amt: imp_amt });
+  }
+
+  // Primary result row
+  let resultAmt;
+  if (activeTab === 'manufacturer') resultAmt = manuf;
+  else if (activeTab === 'importer') resultAmt = manuf;       // buy-in = what they pay manufacturer
+  else if (activeTab === 'distributor') resultAmt = after_dist; // buy-in = what they pay importer
+  else resultAmt = after_rb;                                   // retailer buy price = what they pay distributor
+
+  rows.push({ type: 'result', name: cfg.resultLabel, amt: resultAmt });
+
+  // Margin earned block (importer / distributor / retailer only)
+  if (activeTab === 'importer') {
+    // Importer: buys at manuf price, sells to distributor at after_dist
+    rows.push({ type: 'group-green', name: 'Importer Economics' });
+    rows.push({ type: 'ref', name: 'Buys from manufacturer at', amt: manuf });
+    rows.push({ type: 'ref', name: 'Sells to distributor at',   amt: after_dist });
+    rows.push({ type: 'earned', name: 'Margin earned', amt: imp_amt, pct: pctOf(imp_amt, retail) });
+  }
+
+  if (activeTab === 'distributor') {
+    // Distributor: buys at after_dist (importer's sell price), sells to retailer at after_rb
+    rows.push({ type: 'group-green', name: 'Distributor Economics' });
+    rows.push({ type: 'ref', name: 'Buys from importer at',  amt: after_dist });
+    rows.push({ type: 'ref', name: 'Sells to retailer at',   amt: after_rb   });
+    rows.push({ type: 'earned', name: 'Margin earned', amt: dist_amt, pct: pctOf(dist_amt, retail) });
+  }
+
+  if (activeTab === 'retailer') {
+    // Retailer: buys at after_rb (distributor sell price), sells to consumer at retail
+    const total_ret = rf_amt + rb_amt;
+    rows.push({ type: 'group-green', name: 'Retailer Economics' });
+    rows.push({ type: 'ref', name: 'Buys from distributor at',  amt: after_rb });
+    rows.push({ type: 'ref', name: 'Sells to consumer at',      amt: retail   });
+    rows.push({ type: 'ref', name: `Front-end margin (${v('ret_front')}% of sell price)`, amt: rf_amt, sub: true });
+    rows.push({ type: 'ref', name: `Back-end margin (${v('ret_back')}% of post-front value)`, amt: rb_amt, sub: true });
+    rows.push({ type: 'earned', name: 'Total margin earned', amt: total_ret, pct: pctOf(total_ret, retail) });
+  }
+
+  // Render
+  let html = '';
+  rows.forEach(r => {
+    if (r.type === 'retail') {
+      html += `<div class="wf-row row-retail">
+        <span class="wf-name">Retail Price</span>
+        <span class="wf-pct">100%</span>
+        <span class="wf-amt">${fmt(r.amt)}</span>
+      </div>`;
+
+    } else if (r.type === 'group') {
+      html += `<div class="wf-row row-group">
+        <span class="wf-name group-hd">${r.name}</span>
+        <span></span><span></span>
+      </div>`;
+
+    } else if (r.type === 'group-green') {
+      html += `<div class="wf-row row-group" style="background:var(--green-light); border-top:1px solid var(--green-border);">
+        <span class="wf-name group-hd" style="color:var(--green)">${r.name}</span>
+        <span></span><span></span>
+      </div>`;
+
+    } else if (r.type === 'deduct') {
+      html += `<div class="wf-row">
+        <span class="wf-name muted">${r.name}</span>
+        <span class="wf-pct">${pctOf(r.amt, retail)}</span>
+        <span class="wf-amt neg">− ${fmt(r.amt)}</span>
+      </div>`;
+
+    } else if (r.type === 'result') {
+      html += `<div class="wf-row row-result">
+        <span class="wf-name result-lbl">${r.name}</span>
+        <span class="wf-pct">${pctOf(r.amt, retail)}</span>
+        <span class="wf-amt">${fmt(r.amt)}</span>
+      </div>`;
+
+    } else if (r.type === 'ref') {
+      const indent = r.sub ? 'padding-left:2rem;' : '';
+      html += `<div class="wf-row row-sells-at" style="background:var(--green-light);${indent}">
+        <span class="wf-name muted" style="color:var(--green);opacity:0.8">${r.name}</span>
+        <span class="wf-pct" style="color:var(--green);opacity:0.6">${pctOf(r.amt, retail)}</span>
+        <span class="wf-amt" style="color:var(--green);opacity:0.8">${fmt(r.amt)}</span>
+      </div>`;
+
+    } else if (r.type === 'earned') {
+      html += `<div class="wf-row row-margin-earned">
+        <span class="wf-name green-lbl">${r.name}</span>
+        <span class="wf-pct" style="color:var(--green);font-weight:500">${r.pct}</span>
+        <span class="wf-amt green">${fmt(r.amt)}</span>
+      </div>`;
+    }
+  });
+
+  document.getElementById('waterfall').innerHTML = html;
+}
+
+updateTabUI();
+calc();
+</script>
+</body>
+</html>
