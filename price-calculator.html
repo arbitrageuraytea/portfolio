@@ -50,6 +50,35 @@ body {
 h1 { font-family: var(--ff-serif); font-size: 1.9rem; font-weight: 400; letter-spacing: 0.01em; margin-bottom: 0.5rem; }
 .tagline { font-size: 12.5px; color: var(--ink3); letter-spacing: 0.03em; }
 
+/* Currency bar */
+.currency-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-bottom: 0.75rem;
+}
+.currency-bar label {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink3);
+}
+.currency-input {
+  width: 72px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  padding: 4px 8px;
+  font-family: var(--ff-sans);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+  outline: none;
+  text-align: center;
+}
+.currency-input:focus { border-color: var(--gold); }
+
 /* Tabs */
 .tabs {
   display: grid;
@@ -223,6 +252,61 @@ input[type="number"]::placeholder { color: var(--ink4); }
 .wf-row.row-result .wf-amt { font-size: 15px; font-weight: 500; color: var(--gold); }
 
 .hint { text-align: center; font-size: 11px; color: var(--ink4); letter-spacing: 0.04em; margin-top: 1.5rem; }
+
+/* ── OPTIMIZER ──────────────────────────────── */
+.optimizer-wrap { margin-top:2.5rem; border:1px solid var(--border); background:var(--white); }
+.optimizer-header { display:flex; align-items:center; justify-content:space-between; padding:0.85rem 1.25rem; background:var(--ink); cursor:pointer; user-select:none; }
+.optimizer-header-left { display:flex; flex-direction:column; gap:3px; }
+.optimizer-title { font-family:var(--ff-serif); font-size:1rem; font-weight:400; color:var(--white); letter-spacing:0.01em; }
+.optimizer-sub { font-size:10px; color:rgba(255,255,255,0.45); letter-spacing:0.1em; text-transform:uppercase; }
+.optimizer-toggle { font-size:18px; color:var(--gold); font-weight:300; transition:transform 0.2s; line-height:1; }
+.optimizer-toggle.open { transform:rotate(45deg); }
+.optimizer-body { display:none; padding:1.5rem 1.25rem; }
+.optimizer-body.visible { display:block; }
+.obj-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:1.5rem; }
+@media(max-width:520px){.obj-grid{grid-template-columns:1fr;}}
+.obj-card { border:1px solid var(--border); padding:0.85rem 1rem; cursor:pointer; transition:all 0.15s; background:var(--cream); position:relative; }
+.obj-card:hover { border-color:var(--gold); }
+.obj-card.selected { border-color:var(--gold); background:var(--gold-light); }
+.obj-card.selected::after { content:"✓"; position:absolute; top:6px; right:8px; font-size:10px; color:var(--gold); font-weight:600; }
+.obj-card-title { font-size:11px; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; color:var(--ink); margin-bottom:4px; }
+.obj-card-desc { font-size:11px; color:var(--ink3); line-height:1.5; }
+.target-row { display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem; flex-wrap:wrap; }
+.target-row label { font-size:10px; font-weight:500; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink3); flex-shrink:0; }
+.target-input-wrap { display:flex; align-items:center; gap:6px; border-bottom:1.5px solid var(--border); padding-bottom:2px; }
+.target-input-wrap input { width:90px; background:transparent; border:none; font-family:var(--ff-sans); font-size:15px; font-weight:400; color:var(--ink); outline:none; -moz-appearance:textfield; }
+.target-input-wrap input::-webkit-outer-spin-button, .target-input-wrap input::-webkit-inner-spin-button { -webkit-appearance:none; }
+.target-sym { font-size:12px; color:var(--ink3); }
+.run-btn { padding:0.65rem 1.5rem; background:var(--gold); border:none; font-family:var(--ff-sans); font-size:11px; font-weight:500; letter-spacing:0.1em; text-transform:uppercase; color:var(--white); cursor:pointer; transition:opacity 0.15s; }
+.run-btn:hover { opacity:0.85; }
+.scenarios-label { font-size:9.5px; font-weight:500; letter-spacing:0.18em; text-transform:uppercase; color:#1e5f8c; margin-bottom:0.85rem; display:flex; align-items:center; gap:0.75rem; }
+.scenarios-label::after { content:""; flex:1; height:1px; background:#1e5f8c; opacity:0.3; }
+.scenario-cards { display:flex; flex-direction:column; gap:0; }
+.scenario-card { border:1px solid var(--border); border-top:none; background:var(--white); transition:background 0.15s; }
+.scenario-card:first-child { border-top:1px solid var(--border); }
+.scenario-card:hover { background:var(--cream); }
+.scenario-head { display:grid; grid-template-columns:28px 1fr auto; align-items:center; gap:0.75rem; padding:0.85rem 1.25rem; cursor:pointer; }
+.scenario-rank { font-family:var(--ff-serif); font-size:1.1rem; color:var(--gold); font-weight:400; line-height:1; }
+.scenario-name { font-size:13px; font-weight:500; color:var(--ink); }
+.scenario-name small { display:block; font-size:11px; font-weight:300; color:var(--ink3); margin-top:2px; }
+.scenario-badge { font-size:10px; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; padding:3px 10px; border-radius:999px; }
+.badge-green { background:#e8f5ee; color:#2d6a4f; border:1px solid #b7dfc9; }
+.badge-gold  { background:var(--gold-light); color:var(--gold); border:1px solid #e5c98a; }
+.badge-blue  { background:#e6f0f8; color:#1e5f8c; border:1px solid #b0cfe4; }
+.scenario-detail { display:none; padding:0 1.25rem 1rem 3.5rem; border-top:1px solid var(--border); }
+.scenario-detail.open { display:block; }
+.detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:0 1.5rem; margin-bottom:0.75rem; }
+.detail-row { display:flex; justify-content:space-between; align-items:baseline; padding:0.45rem 0; border-bottom:1px solid var(--border); font-size:12.5px; }
+.detail-row:last-child { border-bottom:none; }
+.detail-row-lbl { color:var(--ink3); }
+.detail-row-val { font-weight:500; color:var(--ink); font-variant-numeric:tabular-nums; }
+.detail-row-val.pos { color:#2d6a4f; }
+.detail-row-val.neg { color:#c0522a; }
+.detail-row-val.gold { color:var(--gold); }
+.apply-btn { margin-top:0.75rem; padding:0.5rem 1.25rem; background:var(--ink); border:none; font-family:var(--ff-sans); font-size:10px; font-weight:500; letter-spacing:0.1em; text-transform:uppercase; color:var(--white); cursor:pointer; transition:opacity 0.15s; }
+.apply-btn:hover { opacity:0.75; }
+.rgm-insight { margin-top:1rem; padding:0.85rem 1rem; background:#e6f0f8; border-left:3px solid #1e5f8c; font-size:12px; color:#1e5f8c; line-height:1.6; }
+.rgm-insight strong { font-weight:500; }
 </style>
 </head>
 <body>
@@ -233,6 +317,11 @@ input[type="number"]::placeholder { color: var(--ink4); }
     <h1>Price Waterfall Calculator</h1>
     <p class="tagline">Choose your perspective — enter your margin — see your implied price</p>
   </header>
+
+  <div class="currency-bar">
+    <label for="currency-sym">Currency symbol</label>
+    <input class="currency-input" type="text" id="currency-sym" value="$" maxlength="5" oninput="calc()" placeholder="$">
+  </div>
 
   <div class="tabs">
     <button class="tab-btn active" onclick="setTab('manufacturer',this)">Manufacturer</button>
@@ -249,7 +338,7 @@ input[type="number"]::placeholder { color: var(--ink4); }
       <div class="cell span2">
         <div class="cell-label">Retail Price (market)</div>
         <div class="input-row">
-          <span class="sym">PKR</span>
+          <span class="sym" id="sym-retail"></span>
           <input type="number" id="retail" value="2700" oninput="calc()">
         </div>
       </div>
@@ -286,10 +375,10 @@ input[type="number"]::placeholder { color: var(--ink4); }
         </div>
       </div>
       <div class="cell span2">
-        <div class="cell-label">Federal Excise Duty (FED) — PKR per unit &amp; relief</div>
+        <div class="cell-label">Specific / Excise Duty — per unit &amp; relief</div>
         <div class="tax-row-inner">
           <div class="tax-input-part">
-            <span class="sym">PKR</span>
+            <span class="sym" id="sym-fed"></span>
             <input type="number" id="fed" value="300" oninput="calc()">
           </div>
           <div class="relief-pills" id="pills-fed">
@@ -340,6 +429,37 @@ input[type="number"]::placeholder { color: var(--ink4); }
   <p class="hint">Each margin is applied to the value remaining after the layer above it</p>
 
 </div>
+  <!-- OPTIMIZER -->
+  <div class="optimizer-wrap">
+    <div class="optimizer-header" onclick="toggleOptimizer()">
+      <div class="optimizer-header-left">
+        <span class="optimizer-title">Price Scenario Optimizer</span>
+        <span class="optimizer-sub">Revenue Growth Management Engine</span>
+      </div>
+      <span class="optimizer-toggle" id="opt-toggle">+</span>
+    </div>
+    <div class="optimizer-body" id="optimizer-body">
+      <p style="font-size:12px;color:var(--ink3);margin-bottom:1.25rem;line-height:1.6;">Choose an objective. The optimizer redistributes the retail price across government and channel layers to find configurations that best meet your goal — without changing the headline retail price.</p>
+      <div class="obj-grid">
+        <div class="obj-card selected" onclick="selectObj('maximize_manufacturer',this)"><div class="obj-card-title">Maximize Mfr Price</div><div class="obj-card-desc">Squeeze channel and tax burden to protect the manufacturer's margin floor</div></div>
+        <div class="obj-card" onclick="selectObj('balance_channel',this)"><div class="obj-card-title">Balance Channel</div><div class="obj-card-desc">Equalize margins across importer, distributor and retailer for a fair split</div></div>
+        <div class="obj-card" onclick="selectObj('retailer_incentive',this)"><div class="obj-card-title">Retailer Incentive</div><div class="obj-card-desc">Shift value towards retailer to drive sell-through and shelf priority</div></div>
+        <div class="obj-card" onclick="selectObj('distributor_incentive',this)"><div class="obj-card-title">Distributor Push</div><div class="obj-card-desc">Give the distributor a wider margin to incentivize stocking and territory coverage</div></div>
+        <div class="obj-card" onclick="selectObj('minimize_tax_impact',this)"><div class="obj-card-title">Minimise Tax Drag</div><div class="obj-card-desc">Model full tax relief scenarios to show maximum channel-available value</div></div>
+        <div class="obj-card" onclick="selectObj('floor_protection',this)"><div class="obj-card-title">Floor Protection</div><div class="obj-card-desc">Back into margins from a minimum manufacturer price — tells you which channels must give ground</div></div>
+      </div>
+      <div class="target-row" id="target-row" style="display:none;">
+        <label id="target-label">Min mfr price</label>
+        <div class="target-input-wrap">
+          <span class="target-sym" id="sym-target"></span>
+          <input type="number" id="target-val" value="30">
+        </div>
+      </div>
+      <button class="run-btn" onclick="runOptimizer()">Run Optimizer</button>
+      <div id="scenarios-out" style="margin-top:1.5rem;"></div>
+    </div>
+  </div>
+
 
 <script>
 const relief = { gst: 0.5, cd: 0.5, fed: 0.5 };
@@ -394,7 +514,9 @@ function setRelief(tax, val, btn) {
 }
 
 function v(id) { return parseFloat(document.getElementById(id).value) || 0; }
-function fmt(n) { return 'PKR\u00a0' + Math.round(n).toLocaleString(); }
+function getCurrency() { return (document.getElementById('currency-sym').value||'$').trim(); }
+function fmt(n) { const c=getCurrency(); return c+' '+Math.round(n).toLocaleString(); }
+function updateSymbols() { const c=getCurrency(); ['sym-retail','sym-fed','sym-target'].forEach(function(id){ var el=document.getElementById(id); if(el) el.textContent=c; }); }
 function pctOf(n, total) { return total ? (n / total * 100).toFixed(1) + '%' : '—'; }
 function relLabel(r) { return r === 1 ? '100%' : r === 0 ? '0%' : '50%'; }
 
@@ -403,6 +525,7 @@ function row(type, name, amt, pct) {
 }
 
 function calc() {
+  updateSymbols();
   const retail    = v('retail');
   const gst_rate  = v('gst') / 100;
   const cd_rate   = v('cd') / 100;
@@ -435,7 +558,7 @@ function calc() {
     { type: 'group',  name: 'Government' },
     { type: 'deduct', name: `GST / Sales Tax (${v('gst')}%  ·  ${relLabel(relief.gst)} applied)`,  amt: gst_eff },
     { type: 'deduct', name: `Customs Duty (${v('cd')}%  ·  ${relLabel(relief.cd)} applied)`,        amt: cd_eff  },
-    { type: 'deduct', name: `Federal Excise Duty (PKR ${fed_abs.toLocaleString()}  ·  ${relLabel(relief.fed)} applied)`, amt: fed_eff },
+    { type: 'deduct', name: `Specific / Excise Duty (${getCurrency()} ${fed_abs.toLocaleString()}  ·  ${relLabel(relief.fed)} applied)`, amt: fed_eff },
     { type: 'group',  name: 'Channel' },
   ];
 
@@ -542,6 +665,181 @@ function calc() {
 
   document.getElementById('waterfall').innerHTML = html;
 }
+
+// ── Optimizer ────────────────────────────────────────────────
+let selectedObj = 'maximize_manufacturer';
+
+function toggleOptimizer() {
+  const body = document.getElementById('optimizer-body');
+  const tog  = document.getElementById('opt-toggle');
+  const open = body.classList.toggle('visible');
+  tog.classList.toggle('open', open);
+}
+
+function selectObj(obj, card) {
+  selectedObj = obj;
+  document.querySelectorAll('.obj-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+  const targetRow = document.getElementById('target-row');
+  if (obj === 'floor_protection') {
+    targetRow.style.display = 'flex';
+    document.getElementById('target-label').textContent = 'Min mfr price (' + getCurrency() + ')';
+  } else {
+    targetRow.style.display = 'none';
+  }
+}
+
+function computeWaterfall(retail, gst_rate, cd_rate, fed_abs, gst_r, cd_r, fed_r, rf, rb, dist_rate, imp_rate) {
+  const gst_eff    = retail * gst_rate * gst_r;
+  const cd_eff     = retail * cd_rate  * cd_r;
+  const fed_eff    = fed_abs            * fed_r;
+  const post_tax   = retail - gst_eff - cd_eff - fed_eff;
+  const rf_amt     = post_tax * rf;
+  const after_rf   = post_tax - rf_amt;
+  const rb_amt     = after_rf * rb;
+  const after_rb   = after_rf - rb_amt;
+  const dist_amt   = after_rb * dist_rate;
+  const after_dist = after_rb - dist_amt;
+  const imp_amt    = after_dist * imp_rate;
+  const manuf      = after_dist - imp_amt;
+  return { gst_eff, cd_eff, fed_eff, post_tax, rf_amt, after_rf, rb_amt, after_rb, dist_amt, after_dist, imp_amt, manuf };
+}
+
+function buildScenario(name, desc, retail, gst_rate, cd_rate, fed_abs, gst_r, cd_r, fed_r, rf, rb, dist, imp, base) {
+  const wf = computeWaterfall(retail, gst_rate, cd_rate, fed_abs, gst_r, cd_r, fed_r, rf, rb, dist, imp);
+  return {
+    name, desc, wf, retail,
+    rf: rf*100, rb: rb*100, dist: dist*100, imp: imp*100,
+    gst_r, cd_r, fed_r,
+    manufDelta: wf.manuf - base.manuf,
+    totalChannelPct: (wf.rf_amt + wf.rb_amt + wf.dist_amt + wf.imp_amt) / retail * 100,
+    totalTaxPct: (wf.gst_eff + wf.cd_eff + wf.fed_eff) / retail * 100,
+  };
+}
+
+function runOptimizer() {
+  const retail   = v('retail');
+  const gst_rate = v('gst') / 100;
+  const cd_rate  = v('cd') / 100;
+  const fed_abs  = v('fed');
+  const baseRF   = v('ret_front') / 100;
+  const baseRB   = v('ret_back') / 100;
+  const baseDist = v('dist') / 100;
+  const baseImp  = v('imp') / 100;
+  const floor    = v('target-val');
+
+  const base = computeWaterfall(retail, gst_rate, cd_rate, fed_abs, relief.gst, relief.cd, relief.fed, baseRF, baseRB, baseDist, baseImp);
+  let scenarios = [];
+
+  if (selectedObj === 'maximize_manufacturer') {
+    scenarios = [
+      buildScenario('Lean channel — equal compression', '', retail, gst_rate, cd_rate, fed_abs, relief.gst, relief.cd, relief.fed, baseRF*0.8, baseRB*0.8, baseDist*0.8, baseImp*0.8, base),
+      buildScenario('Retailer trade spend redirected', '', retail, gst_rate, cd_rate, fed_abs, relief.gst, relief.cd, relief.fed, baseRF*0.7, baseRB*0.6, baseDist, baseImp*0.9, base),
+      buildScenario('Importer absorbs cost pressure', '', retail, gst_rate, cd_rate, fed_abs, relief.gst, relief.cd, relief.fed, baseRF, baseRB, baseDist, baseImp*0.6, base),
+    ];
+  } else if (selectedObj === 'balance_channel') {
+    const eq = (baseRF + baseRB + baseDist + baseImp) / 4;
+    scenarios = [
+      buildScenario('Equal share — flat split', '', retail, gst_rate, cd_rate, fed_abs, relief.gst, relief.cd, relief.fed, eq, eq*0.4, eq, eq, base),
+      buildScenario('Graduated — size-weighted', '', retail, gst_rate, cd_rate, fed_abs, relief.gst, relief.cd, relief.fed, baseRF*0.9, baseRB*0.9, baseDist*1.1, baseImp*1.1, base),
+      buildScenario('Tax relief unlocks balance', '', retail, gst_rate, cd_rate, fed_abs, 0.7, 0.7, relief.fed, baseRF, baseRB, baseDist*1.1, baseImp*1.1, base),
+    ];
+  } else if (selectedObj === 'retailer_incentive') {
+    scenarios = [
+      buildScenario('Retailer front-end bonus (+30%)', '', retail, gst_rate, cd_rate, fed_abs, relief.gst, relief.cd, relief.fed, baseRF*1.3, baseRB, baseDist*0.85, baseImp*0.9, base),
+      buildScenario('Back-end rebate amplified (+50%)', '', retail, gst_rate, cd_rate, fed_abs, relief.gst, relief.cd, relief.fed, baseRF, baseRB*1.5, baseDist*0.9, baseImp*0.85, base),
+      buildScenario('Full retailer uplift — compress upstream', '', retail, gst_rate, cd_rate, fed_abs, relief.gst, relief.cd, relief.fed, baseRF*1.25, baseRB*1.25, baseDist*0.8, baseImp*0.8, base),
+    ];
+  } else if (selectedObj === 'distributor_incentive') {
+    scenarios = [
+      buildScenario('Distributor uplift — retailer funds', '', retail, gst_rate, cd_rate, fed_abs, relief.gst, relief.cd, relief.fed, baseRF*0.85, baseRB*0.9, baseDist*1.3, baseImp, base),
+      buildScenario('Distributor uplift — importer funds', '', retail, gst_rate, cd_rate, fed_abs, relief.gst, relief.cd, relief.fed, baseRF, baseRB, baseDist*1.25, baseImp*0.75, base),
+      buildScenario('Shared compression — dual uplift', '', retail, gst_rate, cd_rate, fed_abs, relief.gst, relief.cd, relief.fed, baseRF*0.9, baseRB*0.85, baseDist*1.2, baseImp*0.9, base),
+    ];
+  } else if (selectedObj === 'minimize_tax_impact') {
+    scenarios = [
+      buildScenario('Full tax relief', '', retail, gst_rate, cd_rate, fed_abs, 0, 0, 0, baseRF, baseRB, baseDist, baseImp, base),
+      buildScenario('GST relief only', '', retail, gst_rate, cd_rate, fed_abs, 0, relief.cd, relief.fed, baseRF, baseRB, baseDist, baseImp, base),
+      buildScenario('Customs + excise relief', '', retail, gst_rate, cd_rate, fed_abs, relief.gst, 0, 0, baseRF, baseRB, baseDist, baseImp, base),
+    ];
+  } else if (selectedObj === 'floor_protection') {
+    const gap = floor - base.manuf;
+    const pp = gap / retail;
+    scenarios = [
+      buildScenario('Equal channel compression to hit floor', '', retail, gst_rate, cd_rate, fed_abs, relief.gst, relief.cd, relief.fed, baseRF*(1-pp/2), baseRB*(1-pp/2), baseDist*(1-pp/2), baseImp*(1-pp/2), base),
+      buildScenario('Retailer absorbs — upstream protected', '', retail, gst_rate, cd_rate, fed_abs, relief.gst, relief.cd, relief.fed, baseRF*(1-pp*0.7), baseRB*(1-pp*0.7), baseDist, baseImp, base),
+      buildScenario('Tax relief closes the gap', '', retail, gst_rate, cd_rate, fed_abs, Math.max(0,relief.gst-0.3), Math.max(0,relief.cd-0.3), relief.fed, baseRF, baseRB, baseDist, baseImp, base),
+    ];
+  }
+
+  scenarios.sort((a,b) => b.wf.manuf - a.wf.manuf);
+  renderScenarios(scenarios, base);
+}
+
+function renderScenarios(scenarios, base) {
+  const out = document.getElementById('scenarios-out');
+  const cur = getCurrency();
+  const badges = [{cls:'badge-green',label:'Best'},{cls:'badge-gold',label:'Good'},{cls:'badge-blue',label:'Alt'}];
+  const insights = [
+    (s,b) => `At ${(s.wf.manuf/s.retail*100).toFixed(0)}% of retail, this gives the manufacturer the strongest implied price. The channel absorbs ${s.totalChannelPct.toFixed(0)}% — validate retailer front-end stays above category norm before implementing.`,
+    (s,b) => `A balanced reallocation. Channel at ${s.totalChannelPct.toFixed(0)}% vs tax at ${s.totalTaxPct.toFixed(0)}%. Use as a negotiating anchor — present before revealing full headroom.`,
+    (s,b) => `Conservative scenario suitable for new market entry or distributor onboarding. Lower initial channel expectations with built-in headroom to improve as volume scales.`
+  ];
+
+  let html = '<div class="scenarios-label">Optimised Scenarios</div><div class="scenario-cards">';
+  scenarios.forEach((s,i) => {
+    const b = badges[i]||badges[2];
+    const dSign = s.manufDelta>=0?'+':'';
+    const cDelta = s.totalChannelPct - (base.rf_amt+base.rb_amt+base.dist_amt+base.imp_amt)/s.retail*100;
+    html += `<div class="scenario-card">
+      <div class="scenario-head" onclick="toggleDetail('sd-${i}')">
+        <span class="scenario-rank">${i+1}</span>
+        <div class="scenario-name">${s.name}<small>Mfr price: ${cur}&nbsp;${Math.round(s.wf.manuf).toLocaleString()} &nbsp;·&nbsp; ${(s.wf.manuf/s.retail*100).toFixed(1)}% of retail</small></div>
+        <span class="scenario-badge ${b.cls}">${b.label}</span>
+      </div>
+      <div class="scenario-detail" id="sd-${i}">
+        <div class="detail-grid">
+          <div>
+            <div class="detail-row"><span class="detail-row-lbl">Mfr price</span><span class="detail-row-val gold">${cur}&nbsp;${Math.round(s.wf.manuf).toLocaleString()}</span></div>
+            <div class="detail-row"><span class="detail-row-lbl">vs current</span><span class="detail-row-val ${s.manufDelta>=0?'pos':'neg'}">${dSign}${cur}&nbsp;${Math.round(s.manufDelta).toLocaleString()}</span></div>
+            <div class="detail-row"><span class="detail-row-lbl">Retailer front</span><span class="detail-row-val">${s.rf.toFixed(1)}%</span></div>
+            <div class="detail-row"><span class="detail-row-lbl">Retailer back</span><span class="detail-row-val">${s.rb.toFixed(1)}%</span></div>
+          </div>
+          <div>
+            <div class="detail-row"><span class="detail-row-lbl">Distributor</span><span class="detail-row-val">${s.dist.toFixed(1)}%</span></div>
+            <div class="detail-row"><span class="detail-row-lbl">Importer</span><span class="detail-row-val">${s.imp.toFixed(1)}%</span></div>
+            <div class="detail-row"><span class="detail-row-lbl">Channel total</span><span class="detail-row-val">${s.totalChannelPct.toFixed(1)}% of retail</span></div>
+            <div class="detail-row"><span class="detail-row-lbl">Channel shift</span><span class="detail-row-val ${cDelta<=0?'pos':'neg'}">${cDelta>0?'+':''}${cDelta.toFixed(1)} pp</span></div>
+          </div>
+        </div>
+        <div class="rgm-insight"><strong>RGM insight:</strong> ${insights[i]?insights[i](s,base):''}</div>
+        <button class="apply-btn" onclick="applyScenario(${s.rf/100},${s.rb/100},${s.dist/100},${s.imp/100},${s.gst_r},${s.cd_r},${s.fed_r})">Apply to calculator</button>
+      </div>
+    </div>`;
+  });
+  html += '</div>';
+  out.innerHTML = html;
+}
+
+function toggleDetail(id) { document.getElementById(id).classList.toggle('open'); }
+
+function applyScenario(rf,rb,dist,imp,gst_r,cd_r,fed_r) {
+  document.getElementById('ret_front').value = (rf*100).toFixed(1);
+  document.getElementById('ret_back').value  = (rb*100).toFixed(1);
+  document.getElementById('dist').value      = (dist*100).toFixed(1);
+  document.getElementById('imp').value       = (imp*100).toFixed(1);
+  function applyPill(k,val) {
+    relief[k]=val;
+    document.querySelectorAll('#pills-'+k+' .pill').forEach(p=>{
+      p.classList.remove('active');
+      if(Math.abs(parseFloat(p.textContent)/100-val)<0.01) p.classList.add('active');
+    });
+  }
+  applyPill('gst',gst_r); applyPill('cd',cd_r); applyPill('fed',fed_r);
+  calc();
+  document.getElementById('waterfall').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
 
 updateTabUI();
 calc();
