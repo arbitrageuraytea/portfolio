@@ -300,6 +300,10 @@ body {
 
 .session-bar.visible { transform: translateY(0); }
 
+/* Push content down when session bar is visible */
+body.session-active { padding-top: 40px; }
+body.session-active .login-overlay { padding-top: 0; margin-top: -40px; }
+
 .session-user {
   color: rgba(255,255,255,0.5);
   font-weight: 500;
@@ -1071,6 +1075,40 @@ body {
   .login-logo { margin-bottom: 24px; }
 }
 
+/* ════════════════════ PORTAL LINKS ════════════════════ */
+.portal-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--ghost);
+}
+
+.portal-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  background: var(--ghost);
+  border: 1px solid var(--silver);
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--slate-400);
+  text-decoration: none;
+  transition: all 0.2s;
+  letter-spacing: 0.3px;
+}
+
+.portal-link:hover {
+  background: var(--navy);
+  color: var(--white);
+  border-color: var(--navy);
+}
+
+.portal-link .arrow-icon { font-size: 9px; opacity: 0.5; }
+
 /* ════════════════════ SCROLLBAR ════════════════════ */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
@@ -1216,6 +1254,11 @@ body {
     <div class="metrics"><div class="met"><div class="met-label">Spot Price</div><div class="met-val">$5,040</div></div><div class="met"><div class="met-label">YoY Return</div><div class="met-val g">+73%</div></div><div class="met"><div class="met-label">JPM Target</div><div class="met-val">$5,000–6,000</div></div></div>
     <div class="rationale">Gold breached $5,000/oz on <strong>record central bank buying</strong> (~585 tonnes/quarter), geopolitical tensions, and global inflation. J.P. Morgan targets $5,000-6,000/oz. Also a <strong>PKR devaluation hedge</strong>. Accumulate on dips below $5,000.</div>
     <div class="gauge"><span class="gauge-label">Capital Risk</span><div class="gauge-track"><div class="gauge-fill ml"></div></div><span class="gauge-text ml">Med-Low</span></div>
+    <div class="portal-links">
+      <a href="https://www.sbp.org.pk" target="_blank" rel="noopener" class="portal-link">SBP Gold Rates <span class="arrow-icon">↗</span></a>
+      <a href="https://www.etoro.com/discover/markets/commodities" target="_blank" rel="noopener" class="portal-link">eToro Gold <span class="arrow-icon">↗</span></a>
+      <a href="https://www.ibkrguide.com" target="_blank" rel="noopener" class="portal-link">IBKR (GLD ETF) <span class="arrow-icon">↗</span></a>
+    </div>
   </div>
 </div>
 <div class="cat-label">Islamic Fixed Income</div>
@@ -1225,12 +1268,20 @@ body {
     <div class="metrics"><div class="met"><div class="met-label">Fund Type</div><div class="met-val">Income</div></div><div class="met"><div class="met-label">Since Inception</div><div class="met-val g">15.96%</div></div><div class="met"><div class="met-label">Compliance</div><div class="met-val">Shariah ✓</div></div></div>
     <div class="rationale">Invests in <strong>government Sukuks and Shariah-compliant instruments</strong>. With T-bill yields at 11%, returns are attractive with minimal capital risk. Pakistan's <strong>largest Shariah-compliant asset manager</strong>.</div>
     <div class="gauge"><span class="gauge-label">Capital Risk</span><div class="gauge-track"><div class="gauge-fill low"></div></div><span class="gauge-text low">Low</span></div>
+    <div class="portal-links">
+      <a href="https://www.almeezangroup.com" target="_blank" rel="noopener" class="portal-link">Al Meezan Portal <span class="arrow-icon">↗</span></a>
+      <a href="https://www.mufap.com.pk" target="_blank" rel="noopener" class="portal-link">MUFAP Fund Prices <span class="arrow-icon">↗</span></a>
+    </div>
   </div>
   <div class="card">
     <div class="card-head"><div><div class="card-name">Pakistan Treasury Bills</div><div class="card-sub">Government of Pakistan · All tenors</div></div><span class="signal signal-buy">Strong Buy</span></div>
     <div class="metrics"><div class="met"><div class="met-label">12M Yield</div><div class="met-val g">11.00%</div></div><div class="met"><div class="met-label">6M Yield</div><div class="met-val g">10.44%</div></div><div class="met"><div class="met-label">Guarantee</div><div class="met-val">Sovereign</div></div></div>
     <div class="rationale">Yields risen <strong>three consecutive auctions</strong>, 50 bps above SBP rate. Rs 155 billion raised at 11%. <strong>Highest-conviction position</strong> — sovereign-backed, zero market risk.</div>
     <div class="gauge"><span class="gauge-label">Capital Risk</span><div class="gauge-track"><div class="gauge-fill low"></div></div><span class="gauge-text low">Low</span></div>
+    <div class="portal-links">
+      <a href="https://www.sbp.org.pk/ecodata/auction-tbills.pdf" target="_blank" rel="noopener" class="portal-link">SBP Auction Results <span class="arrow-icon">↗</span></a>
+      <a href="https://www.meezanbank.com" target="_blank" rel="noopener" class="portal-link">Meezan Bank <span class="arrow-icon">↗</span></a>
+    </div>
   </div>
 </div>
 </div>
@@ -1308,6 +1359,11 @@ body {
     <div class="metrics"><div class="met"><div class="met-label">Avg Yield</div><div class="met-val g">5.4–6.7%</div></div><div class="met"><div class="met-label">2025 Return</div><div class="met-val g">+15.6%</div></div><div class="met"><div class="met-label">P/NAV</div><div class="met-val g">0.86x</div></div></div>
     <div class="rationale"><strong>DPU growth inflection</strong> as borrowing costs decline. Trades below book at 0.86x P/NAV. Top: <strong>CICT</strong> (DPU +6.4%), <strong>Keppel DC</strong> (AI, DPU +9.8%), <strong>Parkway Life</strong> (healthcare). 10–15% upside expected.</div>
     <div class="gauge"><span class="gauge-label">Capital Risk</span><div class="gauge-track"><div class="gauge-fill ml"></div></div><span class="gauge-text ml">Med-Low</span></div>
+    <div class="portal-links">
+      <a href="https://sreit.fifthperson.com" target="_blank" rel="noopener" class="portal-link">S-REIT Data <span class="arrow-icon">↗</span></a>
+      <a href="https://www.sgx.com/securities/reits" target="_blank" rel="noopener" class="portal-link">SGX REITs <span class="arrow-icon">↗</span></a>
+      <a href="https://www.ibkrguide.com" target="_blank" rel="noopener" class="portal-link">Buy via IBKR <span class="arrow-icon">↗</span></a>
+    </div>
   </div>
   <div class="card">
     <div class="card-head"><div><div class="card-name">Dubai REITs</div><div class="card-sub">Emirates REIT, ENBD REIT</div></div><span class="signal signal-hold">Hold</span></div>
@@ -1330,6 +1386,11 @@ body {
     <div class="metrics"><div class="met"><div class="met-label">1Y Return</div><div class="met-val g">+54%</div></div><div class="met"><div class="met-label">10Y Ann.</div><div class="met-val g">~19.8%</div></div><div class="met"><div class="met-label">NATO GDP</div><div class="met-val g">5% by 2035</div></div></div>
     <div class="rationale"><strong>Multi-year structural upcycle.</strong> NATO 5% GDP by 2035. Global outlays $2.6T in 2026. Record backlogs. Recommended: <strong>ITA, XAR, SHLD</strong>. Requires USD brokerage.</div>
     <div class="gauge"><span class="gauge-label">Capital Risk</span><div class="gauge-track"><div class="gauge-fill med"></div></div><span class="gauge-text med">Medium</span></div>
+    <div class="portal-links">
+      <a href="https://www.ishares.com/us/products/239502/ishares-us-aerospace-defense-etf" target="_blank" rel="noopener" class="portal-link">ITA (iShares) <span class="arrow-icon">↗</span></a>
+      <a href="https://www.ssga.com/us/en/intermediary/etfs/state-street-spdr-sp-aerospace-defense-etf-xar" target="_blank" rel="noopener" class="portal-link">XAR (SPDR) <span class="arrow-icon">↗</span></a>
+      <a href="https://www.ibkrguide.com" target="_blank" rel="noopener" class="portal-link">Buy via IBKR <span class="arrow-icon">↗</span></a>
+    </div>
   </div>
   <div class="card flagged">
     <div class="risk-alert"><span class="risk-pulse"></span><span class="risk-alert-text">Extreme Valuations</span></div>
@@ -1339,6 +1400,47 @@ body {
     <div class="gauge"><span class="gauge-label">Capital Risk</span><div class="gauge-track"><div class="gauge-fill high"></div></div><span class="gauge-text high">High</span></div>
   </div>
 </div>
+
+<div class="cat-label">Foreign Exchange (FX)</div>
+<div class="grid">
+  <div class="card">
+    <div class="card-head"><div><div class="card-name">USD/PKR — Hold USD</div><div class="card-sub">US Dollar vs Pakistani Rupee</div></div><span class="signal signal-buy">Buy USD</span></div>
+    <div class="metrics"><div class="met"><div class="met-label">Current Rate</div><div class="met-val">290.2</div></div><div class="met"><div class="met-label">YoY Deprn.</div><div class="met-val r">−12%+</div></div><div class="met"><div class="met-label">Trend</div><div class="met-val r">PKR Weak</div></div></div>
+    <div class="rationale">The PKR hit a <strong>fresh record low</strong> against the Dollar. With Gulf tensions spiking oil import costs and the current account under pressure, further depreciation is likely. <strong>Holding USD-denominated assets is an active hedge</strong> against PKR erosion. Even a simple USD bank deposit in a Roshan Digital Account earns protection against devaluation. For those with foreign income, delay conversion to PKR.</div>
+    <div class="gauge"><span class="gauge-label">Capital Risk</span><div class="gauge-track"><div class="gauge-fill ml"></div></div><span class="gauge-text ml">Med-Low</span></div>
+    <div class="portal-links">
+      <a href="https://www.ibkrguide.com" target="_blank" rel="noopener" class="portal-link">Interactive Brokers <span class="arrow-icon">↗</span></a>
+      <a href="https://www.exness.com" target="_blank" rel="noopener" class="portal-link">Exness <span class="arrow-icon">↗</span></a>
+      <a href="https://www.forex.pk" target="_blank" rel="noopener" class="portal-link">Forex.pk Rates <span class="arrow-icon">↗</span></a>
+    </div>
+  </div>
+
+  <div class="card flagged">
+    <div class="risk-alert"><span class="risk-pulse"></span><span class="risk-alert-text">High Risk — Leverage + Volatility</span></div>
+    <div class="card-head"><div><div class="card-name">FX Trading — EUR/USD, GBP/USD</div><div class="card-sub">Active forex trading on major pairs</div></div><span class="signal signal-avoid">Avoid</span></div>
+    <div class="metrics"><div class="met"><div class="met-label">Leverage</div><div class="met-val r">50–500x</div></div><div class="met"><div class="met-label">Loss Rate</div><div class="met-val r">70–80%</div></div><div class="met"><div class="met-label">SECP Reg.</div><div class="met-val r">None</div></div></div>
+    <div class="rationale"><strong>70–80% of retail forex traders lose money.</strong> Leveraged FX trading with offshore brokers is speculative gambling, not investing. No SECP-regulated forex brokers exist in Pakistan. The combination of extreme leverage, volatile Gulf-driven markets, and unregulated platforms makes this <strong>fundamentally incompatible with capital preservation</strong>. Holding USD directly is a far safer FX strategy.</div>
+    <div class="gauge"><span class="gauge-label">Capital Risk</span><div class="gauge-track"><div class="gauge-fill ext"></div></div><span class="gauge-text ext">Extreme</span></div>
+  </div>
+</div>
+
+<div class="cat-label">Stablecoin Yield (USDT)</div>
+<div class="grid">
+  <div class="card flagged">
+    <div class="risk-alert"><span class="risk-pulse"></span><span class="risk-alert-text">Platform Risk — Not Deposit Insured</span></div>
+    <div class="card-head"><div><div class="card-name">USDT Staking / Lending</div><div class="card-sub">Tether dollar-pegged stablecoin yield</div></div><span class="signal signal-hold">Cautious</span></div>
+    <div class="metrics"><div class="met"><div class="met-label">CeFi Yield</div><div class="met-val a">4–10% APY</div></div><div class="met"><div class="met-label">DeFi Yield</div><div class="met-val a">3–15% APY</div></div><div class="met"><div class="met-label">Depeg Risk</div><div class="met-val a">Low but Real</div></div></div>
+    <div class="rationale">USDT staking yields 4–10% on regulated CeFi platforms (Kraken ~5.5%, Binance ~8–12%) and 3–15% on DeFi (Aave, Compound). <strong>However, this is NOT a bank deposit</strong> — your capital sits on an exchange or in a smart contract with zero deposit insurance. Platform collapses (FTX), depeg events, and smart contract exploits are real risks. For conservative investors, <strong>Pakistan T-bills at 11% yield more with sovereign guarantee</strong> — making USDT yield largely unnecessary. Only consider if you need USD-denominated yield and accept platform risk.</div>
+    <div class="gauge"><span class="gauge-label">Capital Risk</span><div class="gauge-track"><div class="gauge-fill mh"></div></div><span class="gauge-text mh">Med-High</span></div>
+    <div class="portal-links">
+      <a href="https://www.binance.com/en/earn" target="_blank" rel="noopener" class="portal-link">Binance Earn <span class="arrow-icon">↗</span></a>
+      <a href="https://www.kraken.com/features/staking-coins" target="_blank" rel="noopener" class="portal-link">Kraken Staking <span class="arrow-icon">↗</span></a>
+      <a href="https://app.aave.com" target="_blank" rel="noopener" class="portal-link">Aave (DeFi) <span class="arrow-icon">↗</span></a>
+      <a href="https://www.nexo.com/earn-crypto" target="_blank" rel="noopener" class="portal-link">Nexo <span class="arrow-icon">↗</span></a>
+    </div>
+  </div>
+</div>
+
 </div>
 
 <!-- ══════ BONDS ══════ -->
@@ -1505,8 +1607,9 @@ function unlockPortal() {
   // Hide login
   document.getElementById('loginOverlay').classList.add('hidden');
 
-  // Show content
+  // Show content and add body padding for session bar
   document.getElementById('mainContent').style.display = 'block';
+  document.body.classList.add('session-active');
 
   // Show session bar
   document.getElementById('sessionBar').classList.add('visible');
@@ -1600,6 +1703,7 @@ function logout() {
   document.getElementById('loginCode').value = '';
   document.getElementById('loginName').value = '';
   document.getElementById('watermarkLayer').innerHTML = '';
+  document.body.classList.remove('session-active');
   currentUser = '';
 }
 
@@ -1662,9 +1766,7 @@ document.addEventListener('visibilitychange', function() {
 });
 
 
-/* ═══════════════════════════════════════════
-   PROTECTION LAYER 8: Drag prevention
-   ═══════════════════════════════════════════ */
+/* --- PROTECTION LAYER 8: Drag prevention --- */
 document.addEventListener('dragstart', function(e) {
   e.preventDefault();
   return false;
