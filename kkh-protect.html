@@ -549,7 +549,7 @@ body {
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(400px, 100%), 1fr));
   gap: 20px; margin-bottom: 40px;
 }
 
@@ -832,23 +832,246 @@ body {
 }
 
 /* ════════════════════ RESPONSIVE ════════════════════ */
+/* ════════════════════ TABLET (≤ 1000px) ════════════════════ */
 @media (max-width: 1000px) {
-  .nav-bar, .hero-content, .main, .disc-strip, .footer { padding-left: 24px; padding-right: 24px; }
+  .nav-bar, .hero-content, .main, .footer { padding-left: 24px; padding-right: 24px; }
+  .disc-strip { margin: 0 -24px; padding: 14px 24px; }
   .tab-bar { margin: 0 -24px; padding: 0 24px; }
-  .footer { margin: 0 -24px; }
+  .footer { margin: 0 -24px; padding: 40px 24px 32px; }
   .grid { grid-template-columns: 1fr; }
   .port-layout { grid-template-columns: 1fr; }
   .session-bar { padding: 8px 24px; }
+  .ticker-inner { padding: 14px 24px; }
+  .hero { min-height: 360px; }
+  .hero-title { font-size: 38px; }
+  .footer-inner { flex-direction: column; gap: 24px; }
+  .footer-contact { text-align: left; }
 }
 
-@media (max-width: 600px) {
-  .tab { padding: 12px 16px; font-size: 10px; }
-  .card { padding: 22px 20px; }
-  .metrics { margin: 16px -20px; }
-  .briefing { padding: 28px 24px; }
-  .ticker-inner { padding: 12px 24px; gap: 24px; }
+/* ════════════════════ MOBILE (≤ 680px) ════════════════════ */
+@media (max-width: 680px) {
+
+  /* ── Layout & spacing ── */
+  .nav-bar, .hero-content, .main { padding-left: 16px; padding-right: 16px; }
+  .disc-strip { margin: 0 -16px; padding: 12px 16px; }
+  .tab-bar { margin: 0 -16px; padding: 0 16px; }
+  .footer { margin: 0 -16px; padding: 32px 16px 28px; }
+  .section { padding: 32px 0 48px; }
+
+  /* ── Session bar ── */
+  .session-bar {
+    padding: 8px 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 10px;
+  }
+
+  .session-timer { order: 3; width: 100%; text-align: center; font-size: 10px; }
+
+  /* ── Login card ── */
+  .login-card { width: 100%; max-width: 90vw; padding: 0 8px; }
+  .login-logo { flex-direction: column; align-items: center; gap: 10px; margin-bottom: 36px; }
+  .login-logo-text { text-align: center; }
+  .login-logo-name { font-size: 14px; letter-spacing: 2px; }
+  .login-heading { font-size: 24px; }
+  .login-sub { font-size: 12px; }
+  .login-input { padding: 12px 16px; font-size: 16px; /* prevent iOS zoom */ }
+  .login-btn { padding: 14px; font-size: 12px; }
+  .login-footer { font-size: 10px; margin-top: 32px; }
+
+  /* ── Hero ── */
+  .hero { min-height: 300px; }
+
+  .nav-bar {
+    padding: 20px 16px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .logo-mark { width: 34px; height: 34px; font-size: 15px; }
+  .logo-text { font-size: 13px; letter-spacing: 2px; }
+  .logo-sub { font-size: 9px; letter-spacing: 2px; }
+
+  .nav-date { font-size: 10px; }
+
+  .hero-content { padding: 24px 16px 36px; }
+  .hero-eyebrow { font-size: 9px; letter-spacing: 3px; margin-bottom: 12px; }
+  .hero-title { font-size: 28px; line-height: 1.15; }
+  .hero-title br { display: none; } /* let it flow naturally on mobile */
+  .hero-subtitle { font-size: 13px; margin-top: 14px; line-height: 1.65; }
+
+  /* ── Ticker ── */
+  .ticker-inner {
+    padding: 12px 16px;
+    gap: 20px;
+    /* smooth momentum scrolling on iOS */
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tick-label { font-size: 9px; letter-spacing: 1.5px; }
+  .tick-value { font-size: 12px; }
+  .tick-delta { font-size: 10px; }
+
+  /* ── Tabs ── */
+  .tab-inner {
+    -webkit-overflow-scrolling: touch;
+    gap: 0;
+  }
+
+  .tab {
+    padding: 14px 14px;
+    font-size: 10px;
+    letter-spacing: 0.8px;
+    flex-shrink: 0;
+  }
+
+  /* ── Disclaimer ── */
+  .disc-text { font-size: 10.5px; }
+
+  /* ── Briefing ── */
+  .briefing { padding: 24px 20px; margin-bottom: 32px; }
+  .briefing-eyebrow { font-size: 9px; letter-spacing: 2.5px; }
+  .briefing-title { font-size: 22px; margin-bottom: 16px; }
+  .briefing-body { font-size: 13.5px; line-height: 1.7; }
+
+  .briefing-change { gap: 8px; }
+  .change-tag { font-size: 11px; padding: 5px 11px; }
+
+  /* ── Category labels ── */
+  .cat-label { font-size: 10px; letter-spacing: 2.5px; margin: 28px 0 16px; }
+
+  /* ── Cards ── */
+  .card { padding: 20px 18px; border-radius: 10px; }
+
+  .risk-alert { margin: -20px -18px 18px; padding: 9px 18px; }
+  .risk-alert-text { font-size: 10px; letter-spacing: 1.5px; }
+
+  .card-head {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .card-name { font-size: 18px; }
+  .card-sub { font-size: 11px; }
+
+  .signal { font-size: 10px; padding: 4px 12px; align-self: flex-start; }
+
+  .metrics {
+    margin: 16px -18px;
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .met { padding: 10px 8px; }
+  .met-label { font-size: 8px; letter-spacing: 1.5px; margin-bottom: 4px; }
+  .met-val { font-size: 12px; }
+
+  .rationale { font-size: 13px; line-height: 1.7; margin-top: 16px; }
+
+  .gauge { margin-top: 16px; padding-top: 14px; gap: 8px; }
+  .gauge-label { font-size: 8px; width: 65px; letter-spacing: 1.5px; }
+  .gauge-text { font-size: 9px; width: 55px; }
+
+  /* ── Model Portfolio ── */
+  .port-layout { gap: 16px; }
+
+  .port-visual { padding: 28px 20px; }
+  .port-visual-title { font-size: 16px; margin-bottom: 20px; }
+  .port-visual svg { width: 180px; height: 180px; }
+
+  .port-row { padding: 12px 16px; gap: 10px; }
+  .port-name { font-size: 12px; }
+  .port-pct { font-size: 13px; width: 40px; }
+  .port-signal { font-size: 9px; padding: 2px 8px; }
+
+  .port-summary { padding: 16px; }
+  .port-stat-label { font-size: 10px; letter-spacing: 1px; }
+  .port-stat-val { font-size: 13px; }
+
+  .exclusion { padding: 24px 20px; margin-top: 24px; }
+  .exclusion-title { font-size: 18px; margin-bottom: 12px; }
+  .exclusion-body { font-size: 12.5px; line-height: 1.75; }
+
+  /* ── Footer ── */
+  .footer-brand { font-size: 12px; letter-spacing: 2px; }
+  .footer-tagline { font-size: 11px; }
+  .footer-contact a { font-size: 11px; }
+  .footer-legal { font-size: 9.5px; margin-top: 24px; padding-top: 16px; }
 }
 
+/* ════════════════════ SMALL MOBILE (≤ 400px) ════════════════════ */
+@media (max-width: 400px) {
+  .hero-title { font-size: 24px; }
+  .briefing-title { font-size: 20px; }
+  .card-name { font-size: 16px; }
+
+  .metrics { grid-template-columns: repeat(2, 1fr); }
+  .met:nth-child(3) {
+    grid-column: 1 / -1;
+  }
+
+  .ticker-inner { gap: 16px; }
+  .tick { gap: 6px; }
+
+  .port-row {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .port-name { min-width: calc(100% - 110px); }
+
+  .login-logo-mark { width: 40px; height: 40px; font-size: 18px; }
+  .login-heading { font-size: 22px; }
+}
+
+/* ════════════════════ TOUCH DEVICE ENHANCEMENTS ════════════════════ */
+@media (hover: none) and (pointer: coarse) {
+  /* Larger touch targets */
+  .tab { padding: 16px 16px; min-height: 48px; }
+  .login-btn { min-height: 48px; }
+  .session-logout { min-height: 32px; padding: 6px 14px; }
+
+  /* Remove hover effects that don't apply */
+  .card:hover { box-shadow: none; transform: none; border-color: var(--silver); }
+  .card.flagged:hover { border-color: var(--red-border); }
+  .port-row:hover { background: transparent; }
+
+  /* Momentum scrolling for all scrollable areas */
+  .tab-inner, .ticker-inner {
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+  }
+
+  .tab { scroll-snap-align: start; }
+}
+
+/* ════════════════════ SAFE AREA (notch devices) ════════════════════ */
+@supports (padding: env(safe-area-inset-left)) {
+  .nav-bar, .hero-content, .main {
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+  }
+
+  .session-bar {
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+  }
+
+  .footer {
+    padding-bottom: max(28px, env(safe-area-inset-bottom));
+  }
+}
+
+/* ════════════════════ LANDSCAPE MOBILE ════════════════════ */
+@media (max-height: 500px) and (orientation: landscape) {
+  .hero { min-height: 260px; }
+  .hero-content { padding-top: 16px; padding-bottom: 24px; }
+  .hero-title { font-size: 28px; }
+  .login-overlay { overflow-y: auto; }
+  .login-card { padding-top: 20px; padding-bottom: 20px; }
+  .login-logo { margin-bottom: 24px; }
+}
+
+/* ════════════════════ SCROLLBAR ════════════════════ */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--slate-100); border-radius: 3px; }
@@ -1314,17 +1537,35 @@ function generateWatermark(username) {
   const timeStr = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
   const wmText = `CONFIDENTIAL · ${username} · ${dateStr} ${timeStr} · KKH Capital`;
 
-  // Create a grid of watermarks
-  for (let row = 0; row < 12; row++) {
-    for (let col = 0; col < 6; col++) {
+  // Responsive grid: more rows for tall mobile scrolling, smaller text on mobile
+  const isMobile = window.innerWidth < 680;
+  const fontSize = isMobile ? '10px' : '14px';
+  const rowGap = isMobile ? 140 : 180;
+  const colGap = isMobile ? 320 : 500;
+  const rows = Math.ceil((document.body.scrollHeight || 3000) / rowGap) + 4;
+  const cols = isMobile ? 4 : 6;
+
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
       const span = document.createElement('span');
       span.className = 'wm-text';
       span.textContent = wmText;
-      span.style.top = (row * 180 - 50) + 'px';
-      span.style.left = (col * 500 - 200) + 'px';
+      span.style.top = (row * rowGap - 50) + 'px';
+      span.style.left = (col * colGap - 200) + 'px';
+      span.style.fontSize = fontSize;
       layer.appendChild(span);
     }
   }
+
+  // Regenerate on scroll to cover dynamic content height
+  let wmTimeout;
+  window.addEventListener('scroll', function() {
+    clearTimeout(wmTimeout);
+    wmTimeout = setTimeout(function() {
+      const neededRows = Math.ceil(document.body.scrollHeight / rowGap) + 4;
+      if (neededRows > rows) generateWatermark(username);
+    }, 500);
+  }, { passive: true });
 }
 
 /* ═══════ SESSION TIMER ═══════ */
@@ -1368,7 +1609,15 @@ function switchTab(id, el) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.getElementById('s-' + id).classList.add('active');
   el.classList.add('active');
-  window.scrollTo({ top: document.querySelector('.tab-bar').offsetTop, behavior: 'smooth' });
+
+  // Scroll active tab into view horizontally
+  el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+
+  // Scroll page to tabs with offset for session bar
+  const tabBar = document.querySelector('.tab-bar');
+  const sessionBarHeight = document.getElementById('sessionBar').classList.contains('visible') ? 40 : 0;
+  const targetY = tabBar.getBoundingClientRect().top + window.pageYOffset - sessionBarHeight;
+  window.scrollTo({ top: targetY, behavior: 'smooth' });
 }
 
 /* ═══════════════════════════════════════════
@@ -1411,6 +1660,7 @@ document.addEventListener('visibilitychange', function() {
     console.log('Tab hidden at', new Date().toISOString());
   }
 });
+
 
 /* ═══════════════════════════════════════════
    PROTECTION LAYER 8: Drag prevention
