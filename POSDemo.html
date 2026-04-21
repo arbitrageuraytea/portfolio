@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>POS Insights — AT & Co.</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, -apple-system, Arial, sans-serif; background: #F7F8FA; color: #1B2B4B; }
+
+  /* NAV */
+  nav { background: #1B2B4B; padding: 0 24px; display: flex; align-items: center; gap: 0; position: sticky; top: 0; z-index: 100; }
+  .logo { display: flex; align-items: center; gap: 10px; padding: 12px 0; margin-right: 28px; cursor: pointer; text-decoration: none; }
+  .logo-box { width: 30px; height: 30px; background: #C9A84C; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 11px; color: #1B2B4B; flex-shrink: 0; }
+  .logo-name { color: white; font-weight: 800; font-size: 14px; }
+  .nav-tab { background: none; border: none; color: rgba(255,255,255,0.55); font-size: 13px; padding: 16px 14px; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; font-family: inherit; }
+  .nav-tab.active { color: #C9A84C; font-weight: 700; border-bottom-color: #C9A84C; }
+  .nav-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+  .store-select { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 6px; padding: 6px 10px; font-size: 12px; cursor: pointer; font-family: inherit; }
+  .nav-date { color: #C9A84C; font-size: 11px; font-weight: 700; }
+
+  /* LAYOUT */
+  .container { max-width: 1080px; margin: 0 auto; padding: 24px 20px; }
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* LANDING */
+  .landing { max-width: 820px; margin: 0 auto; padding: 64px 24px; text-align: center; }
+  .landing-badge { display: inline-block; background: #F5EDD6; color: #7A5C1E; font-size: 11px; font-weight: 700; padding: 4px 14px; border-radius: 20px; margin-bottom: 20px; letter-spacing: .06em; }
+  .landing h1 { font-size: 38px; font-weight: 800; color: #1B2B4B; line-height: 1.2; margin-bottom: 14px; }
+  .landing h1 span { color: #C9A84C; }
+  .landing p { font-size: 15px; color: #4A5568; max-width: 490px; margin: 0 auto 34px; line-height: 1.75; }
+  .btn-primary { background: #1B2B4B; color: white; border: none; padding: 13px 30px; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; }
+  .btn-primary:hover { opacity: 0.88; }
+  .btn-ghost { background: white; color: #A0AEC0; border: 1.5px solid #E2E8F0; padding: 13px 30px; border-radius: 8px; font-size: 14px; cursor: not-allowed; font-family: inherit; }
+  .how-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin: 36px 0; }
+  .how-card { background: white; border: 1px solid #E2E8F0; border-radius: 12px; padding: 22px; text-align: center; }
+  .how-card .num { font-size: 28px; font-weight: 800; color: #1B2B4B; }
+  .how-card .lbl { font-size: 13px; font-weight: 700; color: #2D3748; margin: 4px 0; }
+  .how-card .sub { font-size: 12px; color: #718096; }
+  .steps { background: white; border: 1px solid #E2E8F0; border-radius: 12px; padding: 24px 28px; text-align: left; }
+  .steps-header { font-size: 10px; font-weight: 700; color: #A0AEC0; letter-spacing: .08em; margin-bottom: 16px; }
+  .steps-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 20px; }
+  .step { display: flex; flex-direction: column; gap: 10px; }
+  .step-num { width: 26px; height: 26px; background: #1B2B4B; border-radius: 50%; color: white; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+  .step p { font-size: 12px; color: #4A5568; line-height: 1.6; }
+
+  /* METRIC CARDS */
+  .metric-row { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+  .metric-card { background: #EEF1F7; border-radius: 10px; padding: 14px 18px; flex: 1; min-width: 120px; }
+  .metric-card .mlabel { font-size: 10px; color: #6B7A99; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 4px; }
+  .metric-card .mvalue { font-size: 21px; font-weight: 800; color: #1B2B4B; }
+  .metric-card .msub { font-size: 12px; margin-top: 2px; }
+
+  /* INSIGHT CARDS */
+  .insight-card { background: white; border-radius: 12px; padding: 17px 20px; margin-bottom: 13px; border: 1px solid #E2E8F0; }
+  .insight-card.high  { border-left: 4px solid #C0392B; border-color: #F5C6CB; border-left-color: #C0392B; }
+  .insight-card.medium{ border-left: 4px solid #B7770D; }
+  .insight-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 9px; flex-wrap: wrap; }
+  .badges { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .pill { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 9px; border-radius: 4px; white-space: nowrap; }
+  .pill-high   { background: #FDEDED; color: #C0392B; }
+  .pill-medium { background: #FEF8E7; color: #B7770D; }
+  .pill-type   { background: #F5EDD6; color: #7A5C1E; }
+  .pill-sku    { font-family: monospace; font-size: 10px; color: #A0AEC0; }
+  .risk-amt { font-size: 13px; font-weight: 800; color: #C0392B; white-space: nowrap; }
+  .insight-headline { font-size: 14px; font-weight: 700; color: #1B2B4B; margin-bottom: 7px; line-height: 1.4; }
+  .insight-narrative { font-size: 13px; color: #4A5568; line-height: 1.75; margin-bottom: 12px; }
+  .action-box { background: #F5EDD6; border-radius: 8px; padding: 9px 13px; margin-bottom: 12px; font-size: 13px; color: #3D3000; }
+  .action-box strong { font-size: 11px; font-weight: 700; color: #7A5C1E; }
+  .insight-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+  .conf-wrap { flex: 1; max-width: 185px; }
+  .conf-label { font-size: 10px; color: #A0AEC0; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 3px; }
+  .conf-bar-bg { height: 4px; background: #E5E9F0; border-radius: 2px; }
+  .conf-bar-fill { height: 100%; background: #C9A84C; border-radius: 2px; }
+  .conf-pct { font-size: 11px; color: #6B7A99; margin-left: 8px; }
+  .conf-row { display: flex; align-items: center; }
+  .fb-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .fb-btn { font-size: 12px; padding: 5px 10px; border-radius: 6px; font-weight: 600; border: 1px solid #D0D5E0; background: white; color: #718096; cursor: pointer; font-family: inherit; }
+  .fb-btn:hover { opacity: 0.8; }
+  .fb-btn.acted    { border-color: #1E7E40; background: #1E7E4018; color: #1E7E40; }
+  .fb-btn.notrel   { border-color: #B7770D; background: #B7770D18; color: #B7770D; }
+  .fb-btn.wrong    { border-color: #C0392B; background: #C0392B18; color: #C0392B; }
+  .regen-btn { font-size: 12px; padding: 5px 11px; border-radius: 6px; border: 1px solid #C9A84C; background: white; color: #7A5C1E; font-weight: 600; cursor: pointer; font-family: inherit; }
+
+  /* SPARKLINE CONTAINER */
+  .chart-box { background: white; border: 1px solid #E2E8F0; border-radius: 12px; padding: 16px 20px; margin-bottom: 18px; }
+  .chart-title { font-size: 11px; font-weight: 700; color: #1B2B4B; letter-spacing: .05em; margin-bottom: 10px; }
+  canvas { display: block; width: 100%; }
+
+  /* ANALYTICS TABS */
+  .sub-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+  .sub-tab { padding: 7px 15px; border-radius: 6px; font-size: 13px; cursor: pointer; border: 1px solid #E2E8F0; background: white; color: #4A5568; font-family: inherit; }
+  .sub-tab.active { background: #1B2B4B; color: white; border-color: transparent; font-weight: 700; }
+  .sub-page { display: none; }
+  .sub-page.active { display: block; }
+
+  /* TABLE */
+  .data-table { width: 100%; border-collapse: collapse; font-size: 13px; background: white; border-radius: 12px; overflow: hidden; border: 1px solid #E2E8F0; }
+  .data-table thead tr { background: #EEF1F7; }
+  .data-table th { padding: 11px 15px; text-align: left; font-size: 10px; font-weight: 700; color: #6B7A99; letter-spacing: .06em; }
+  .data-table td { padding: 11px 15px; border-top: 1px solid #F0F4F8; }
+  .data-table tr:nth-child(even) td { background: #FAFBFC; }
+
+  /* STORE GRID */
+  .store-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+  .store-card { background: white; border: 1.5px solid #E2E8F0; border-radius: 12px; padding: 16px; }
+  .store-card.selected { border-color: #C9A84C; }
+  .store-header { display: flex; justify-content: space-between; margin-bottom: 12px; }
+  .store-name { font-size: 13px; font-weight: 700; color: #1B2B4B; line-height: 1.3; }
+  .store-sub { font-size: 11px; color: #718096; }
+  .store-rank { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; }
+  .store-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .store-stat { background: #EEF1F7; border-radius: 7px; padding: 9px 11px; }
+  .store-stat-l { font-size: 10px; color: #6B7A99; text-transform: uppercase; letter-spacing: .05em; }
+  .store-stat-v { font-size: 15px; font-weight: 800; color: #1B2B4B; }
+
+  /* LOG */
+  .log-summary { display: flex; gap: 9px; margin-bottom: 20px; flex-wrap: wrap; }
+  .log-card { flex: 1; min-width: 90px; border-radius: 10px; padding: 13px 15px; }
+  .log-val { font-size: 22px; font-weight: 800; }
+  .log-lbl { font-size: 11px; font-weight: 600; }
+  .log-row { background: white; border: 1px solid #E2E8F0; border-radius: 10px; padding: 12px 16px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+  .log-text { flex: 1; min-width: 150px; }
+  .log-headline { font-size: 13px; font-weight: 600; color: #1B2B4B; }
+  .log-product { font-size: 11px; color: #A0AEC0; }
+  .status-pill { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 4px; }
+
+  /* ADMIN */
+  .admin-grid4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 9px; margin-bottom: 18px; }
+  .admin-stat { background: #EEF1F7; border-radius: 9px; padding: 12px 14px; }
+  .admin-stat-v { font-size: 22px; font-weight: 800; }
+  .admin-stat-l { font-size: 11px; font-weight: 700; color: #1B2B4B; margin-top: 2px; }
+  .admin-stat-s { font-size: 10px; color: #718096; }
+  .schema-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+  .schema-box { background: #EEF1F7; border-radius: 8px; padding: 12px; }
+  .schema-title { font-family: monospace; font-size: 11px; font-weight: 700; color: #1B2B4B; margin-bottom: 5px; }
+  .schema-fields { font-size: 11px; color: #6B7A99; line-height: 1.7; }
+  .section-card { background: white; border: 1px solid #E2E8F0; border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+  .section-title { font-size: 13px; font-weight: 700; color: #1B2B4B; margin-bottom: 13px; }
+  .perf-row { display: flex; align-items: center; gap: 9px; margin-bottom: 6px; }
+  .perf-bar-bg { flex: 1; height: 5px; background: #F0F4F8; border-radius: 3px; }
+  .perf-bar-fill { height: 100%; border-radius: 3px; }
+  .perf-fb { font-size: 10px; color: #A0AEC0; min-width: 80px; }
+  .perf-pct { font-size: 10px; color: #A0AEC0; min-width: 28px; }
+
+  /* LOCK SCREEN */
+  .lock-screen { max-width: 340px; margin: 60px auto; text-align: center; }
+  .lock-icon { font-size: 36px; margin-bottom: 14px; }
+  .lock-title { font-size: 17px; font-weight: 700; color: #1B2B4B; margin-bottom: 6px; }
+  .lock-sub { font-size: 13px; color: #718096; margin-bottom: 18px; }
+  .lock-input { width: 100%; padding: 10px 13px; border-radius: 8px; border: 1px solid #E2E8F0; font-size: 14px; margin-bottom: 11px; font-family: inherit; }
+  .lock-btn { background: #1B2B4B; color: white; border: none; padding: 11px 0; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; width: 100%; font-family: inherit; }
+  .lock-hint { font-size: 11px; color: #A0AEC0; margin-top: 10px; }
+
+  /* LOADING */
+  #loading-screen { display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 80vh; gap: 22px; }
+  .spinner { width: 44px; height: 44px; border: 3px solid #F5EDD6; border-top-color: #C9A84C; border-radius: 50%; animation: spin .8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .load-msg { font-size: 15px; color: #1B2B4B; font-weight: 600; }
+  .load-dots { display: flex; gap: 6px; }
+  .load-dot { width: 6px; height: 6px; border-radius: 50%; background: #D0D5E0; }
+  .load-dot.done { background: #C9A84C; }
+
+  /* UTIL */
+  .green { color: #1E7E40; } .red { color: #C0392B; } .amber { color: #B7770D; }
+  .fw7 { font-weight: 700; } .fw8 { font-weight: 800; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+  .fade { animation: fadeUp .25s ease; }
+
+  /* INSIGHT FLAG for day-of-week */
+  .insight-flag { background: #F5EDD6; border-radius: 8px; padding: 11px 14px; font-size: 13px; color: #3D3000; margin-top: 16px; }
+</style>
+</head>
+<body>
+
+<!-- NAV (hidden on landing) -->
+<nav id="main-nav" style="display:none;">
+  <a class="logo" onclick="showLanding()">
+    <div class="logo-box">AT</div>
+    <span class="logo-name">POS Insights</span>
+  </a>
+  <button class="nav-tab active" onclick="switchTab('brief',this)">Daily brief</button>
+  <button class="nav-tab" onclick="switchTab('analytics',this)">Analytics</button>
+  <button class="nav-tab" onclick="switchTab('log',this)">Insights log</button>
+  <button class="nav-tab" onclick="switchTab('admin',this)">Admin</button>
+  <div class="nav-right">
+    <select class="store-select" id="store-select" onchange="switchStore(this.value)">
+      <option value="STR-001">Dubai Mall Flagship</option>
+      <option value="STR-002">Mall of Emirates</option>
+      <option value="STR-003">Riyadh Park Mall</option>
+      <option value="STR-004">Doha Festival City</option>
+      <option value="STR-005">Cairo City Stars</option>
+      <option value="STR-006">Kuwait Avenues</option>
+    </select>
+    <span class="nav-date">15 APR 2024</span>
+  </div>
+</nav>
+
+<!-- ══════════════ LANDING ══════════════ -->
+<div id="landing-page">
+  <div id="loading-screen">
+    <div class="spinner"></div>
+    <div class="load-msg" id="load-msg">Loading...</div>
+    <div class="load-dots" id="load-dots">
+      <div class="load-dot" id="d0"></div>
+      <div class="load-dot" id="d1"></div>
+      <div class="load-dot" id="d2"></div>
+      <div class="load-dot" id="d3"></div>
+      <div class="load-dot" id="d4"></div>
+    </div>
+  </div>
+  <nav style="background:#1B2B4B;padding:13px 28px;display:flex;align-items:center;justify-content:space-between;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div class="logo-box">AT</div>
+      <div>
+        <div style="color:white;font-weight:800;font-size:14px;line-height:1;">AT & Co.</div>
+        <div style="color:#C9A84C;font-size:10px;">Financial intelligence for retail operators</div>
+      </div>
+    </div>
+    <button onclick="gotoAdmin()" style="background:transparent;border:1px solid rgba(255,255,255,.3);color:rgba(255,255,255,.7);padding:7px 16px;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit;">Admin panel</button>
+  </nav>
+  <div id="landing-content" class="landing">
+    <div class="landing-badge">POWERED BY AT & CO. · CFA-QUALIFIED ADVISORY</div>
+    <h1>Turn your POS data into<br><span>daily business actions</span></h1>
+    <p>Upload your sales data and get AI-generated recommendations — velocity alerts, margin warnings, seasonal preps — ranked by revenue impact. Every day.</p>
+    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+      <button class="btn-primary" onclick="startDemo()">Try with demo data →</button>
+      <button class="btn-ghost">Upload CSV (coming soon)</button>
+    </div>
+    <div class="how-grid">
+      <div class="how-card"><div class="num">12</div><div class="lbl">Insight types</div><div class="sub">Velocity, margin, seasonal, basket…</div></div>
+      <div class="how-card"><div class="num">Daily</div><div class="lbl">Refresh cadence</div><div class="sub">New recommendations every day</div></div>
+      <div class="how-card"><div class="num">Free</div><div class="lbl">Entry tier</div><div class="sub">1 store · 30 days · no card needed</div></div>
+    </div>
+    <div class="steps">
+      <div class="steps-header">HOW IT WORKS</div>
+      <div class="steps-grid">
+        <div class="step"><div class="step-num">1</div><p>Upload POS data via CSV, REST API, or POS connector</p></div>
+        <div class="step"><div class="step-num">2</div><p>Engine builds 7/30-day baselines per SKU and store</p></div>
+        <div class="step"><div class="step-num">3</div><p>Claude AI generates ranked daily recommendations</p></div>
+        <div class="step"><div class="step-num">4</div><p>You act and give feedback — model learns what's useful</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ MAIN APP ══════════════ -->
+<div id="app" style="display:none;">
+  <div class="container">
+
+    <!-- DAILY BRIEF -->
+    <div id="page-brief" class="page active fade">
+      <div style="margin-bottom:18px;">
+        <h2 id="brief-title" style="font-size:18px;font-weight:800;color:#1B2B4B;margin-bottom:3px;"></h2>
+        <p style="font-size:12px;color:#718096;">Monday 15 April 2024 · Eid al-Fitr in 5 days · 5 active recommendations</p>
+      </div>
+      <div class="metric-row" id="metric-row"></div>
+      <div class="chart-box">
+        <div class="chart-title" id="sparkline-title">30-DAY REVENUE</div>
+        <canvas id="sparkline" height="80"></canvas>
+      </div>
+      <div id="insight-cards"></div>
+    </div>
+
+    <!-- ANALYTICS -->
+    <div id="page-analytics" class="page fade">
+      <h2 style="font-size:18px;font-weight:800;color:#1B2B4B;margin-bottom:16px;">Analytics Explorer</h2>
+      <div class="sub-tabs">
+        <button class="sub-tab active" onclick="switchSubTab('revenue',this)">Revenue</button>
+        <button class="sub-tab" onclick="switchSubTab('products',this)">Products</button>
+        <button class="sub-tab" onclick="switchSubTab('stores',this)">Stores</button>
+        <button class="sub-tab" onclick="switchSubTab('patterns',this)">Patterns</button>
+      </div>
+      <div id="sub-revenue" class="sub-page active">
+        <div class="chart-box" style="margin-bottom:16px;">
+          <div class="chart-title" id="rev-chart-title">30-DAY REVENUE</div>
+          <canvas id="rev-chart" height="160"></canvas>
+        </div>
+        <div class="chart-box">
+          <div class="chart-title">REVENUE BY CATEGORY</div>
+          <canvas id="cat-chart" height="160"></canvas>
+        </div>
+      </div>
+      <div id="sub-products" class="sub-page">
+        <table class="data-table">
+          <thead><tr><th>SKU</th><th>Product</th><th>Category</th><th>Units</th><th>Revenue</th><th>Margin</th><th>7d Trend</th></tr></thead>
+          <tbody id="sku-tbody"></tbody>
+        </table>
+      </div>
+      <div id="sub-stores" class="sub-page">
+        <div class="store-grid" id="store-grid"></div>
+      </div>
+      <div id="sub-patterns" class="sub-page">
+        <div class="chart-box">
+          <div class="chart-title" id="dow-title">REVENUE BY DAY OF WEEK</div>
+          <canvas id="dow-chart" height="180"></canvas>
+          <div style="display:flex;gap:14px;margin-top:12px;flex-wrap:wrap;">
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#718096;"><div style="width:10px;height:10px;background:#1B2B4B;border-radius:2px;"></div>Peak (≥$4k)</div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#718096;"><div style="width:10px;height:10px;background:#C9A84C;border-radius:2px;"></div>High ($3–4k)</div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#718096;"><div style="width:10px;height:10px;background:#BDC9DA;border-radius:2px;"></div>Normal (&lt;$3k)</div>
+          </div>
+          <div class="insight-flag"><strong>Insight:</strong> Friday and Saturday generate 45% of weekly revenue on standard weekday staffing. Consider +2 floor staff Fri–Sat to reduce queue abandonment.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INSIGHTS LOG -->
+    <div id="page-log" class="page fade">
+      <h2 style="font-size:18px;font-weight:800;color:#1B2B4B;margin-bottom:5px;">Insights log</h2>
+      <p style="font-size:13px;color:#718096;margin-bottom:20px;">All recommendations delivered. Feedback trains the engine over time.</p>
+      <div class="log-summary" id="log-summary"></div>
+      <div id="log-rows"></div>
+    </div>
+
+    <!-- ADMIN -->
+    <div id="page-admin" class="page fade">
+      <div id="lock-screen" class="lock-screen">
+        <div class="lock-icon">🔒</div>
+        <div class="lock-title">Admin access</div>
+        <div class="lock-sub">AT & Co. internal — client data, accuracy tracking, conversion signals.</div>
+        <input type="password" class="lock-input" id="pw-input" placeholder="Password" onkeydown="if(event.key==='Enter')checkPw()"/>
+        <button class="lock-btn" onclick="checkPw()">Unlock</button>
+        <div class="lock-hint">Demo password: atco2024</div>
+      </div>
+      <div id="admin-content" style="display:none;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
+          <div>
+            <h2 style="font-size:18px;font-weight:800;color:#1B2B4B;">AT & Co. Admin Panel</h2>
+            <p style="font-size:12px;color:#718096;">Insight accuracy · Client activity · Conversion signals</p>
+          </div>
+          <span class="pill pill-type">CFA-QUALIFIED ADVISORY</span>
+        </div>
+        <div class="section-card">
+          <div class="section-title">Insight accuracy scorecard</div>
+          <div class="admin-grid4" id="accuracy-grid"></div>
+          <div class="section-title" style="margin-top:4px;">Per-type performance</div>
+          <div id="perf-rows"></div>
+        </div>
+        <div class="section-card">
+          <div class="section-title">Client activity log</div>
+          <table class="data-table">
+            <thead><tr><th>Client</th><th>Tier</th><th>Stores</th><th>Last upload</th><th>Quality</th><th>Engagement</th><th>Lead signal</th></tr></thead>
+            <tbody>
+              <tr><td class="fw8" style="color:#1B2B4B;">RetailCo Dubai</td><td><span class="pill" style="background:#EEF1F7;color:#1B2B4B;">Free</span></td><td>1</td><td style="color:#718096;">Today</td><td><div style="display:flex;align-items:center;gap:5px;"><div style="width:42px;height:4px;background:#E2E8F0;border-radius:2px;"><div style="width:94%;height:100%;background:#1E7E40;border-radius:2px;"></div></div><span style="font-size:10px;color:#718096;">94%</span></div></td><td class="green fw7">High</td><td><span class="pill" style="background:#F5EDD6;color:#7A5C1E;">★ Warm</span></td></tr>
+              <tr><td class="fw8" style="color:#1B2B4B;">GrocerPlus KSA</td><td><span class="pill" style="background:#E6F1FB;color:#185FA5;">Starter</span></td><td>3</td><td style="color:#718096;">Yesterday</td><td><div style="display:flex;align-items:center;gap:5px;"><div style="width:42px;height:4px;background:#E2E8F0;border-radius:2px;"><div style="width:88%;height:100%;background:#B7770D;border-radius:2px;"></div></div><span style="font-size:10px;color:#718096;">88%</span></div></td><td class="amber fw7">Medium</td><td><span class="pill" style="background:#E6F1FB;color:#185FA5;">Neutral</span></td></tr>
+              <tr><td class="fw8" style="color:#1B2B4B;">FreshMart Qatar</td><td><span class="pill" style="background:#EEF1F7;color:#1B2B4B;">Growth</span></td><td>7</td><td style="color:#718096;">2 days ago</td><td><div style="display:flex;align-items:center;gap:5px;"><div style="width:42px;height:4px;background:#E2E8F0;border-radius:2px;"><div style="width:97%;height:100%;background:#1E7E40;border-radius:2px;"></div></div><span style="font-size:10px;color:#718096;">97%</span></div></td><td class="green fw7">High</td><td><span class="pill" style="background:#FDEDED;color:#C0392B;">🔥 Hot</span></td></tr>
+              <tr><td class="fw8" style="color:#1B2B4B;">SuperShop Egypt</td><td><span class="pill" style="background:#EEF1F7;color:#1B2B4B;">Free</span></td><td>1</td><td style="color:#718096;">1 week ago</td><td><div style="display:flex;align-items:center;gap:5px;"><div style="width:42px;height:4px;background:#E2E8F0;border-radius:2px;"><div style="width:71%;height:100%;background:#B7770D;border-radius:2px;"></div></div><span style="font-size:10px;color:#718096;">71%</span></div></td><td class="red fw7">Low</td><td><span class="pill" style="background:#F1EFE8;color:#5F5E5A;">Cold</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="section-card">
+          <div class="section-title">What AT & Co. captures per insight (internal schema)</div>
+          <div class="schema-grid">
+            <div class="schema-box"><div class="schema-title">insights_log</div><div class="schema-fields">insight_id · client_id · store_id · type · severity · sku · headline · narrative · action · revenue_at_risk · confidence · delivered_at</div></div>
+            <div class="schema-box"><div class="schema-title">feedback_events</div><div class="schema-fields">event_id · insight_id · client_id · feedback_value · timestamp · outcome_verified</div></div>
+            <div class="schema-box"><div class="schema-title">uploads</div><div class="schema-fields">upload_id · row_count · field_coverage_score · data_quality_score · schema_fingerprint · upload_at</div></div>
+            <div class="schema-box"><div class="schema-title">clients</div><div class="schema-fields">client_id · tier · store_count · last_upload_at · engagement_score · conversion_signal</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════
+// DATA
+// ════════════════════════════════════════════════════════
+const STORES = {
+  "STR-001": { name:"Dubai Mall Flagship",   city:"Dubai",      country:"UAE",         type:"Flagship", sqft:12000, rev:3820, margin:26.4, txns:41, basket:93.2, trend:-9.2  },
+  "STR-002": { name:"Mall of Emirates",       city:"Dubai",      country:"UAE",         type:"Standard", sqft:8500,  rev:2940, margin:24.8, txns:33, basket:89.1, trend:4.6   },
+  "STR-003": { name:"Riyadh Park Mall",       city:"Riyadh",     country:"Saudi Arabia",type:"Standard", sqft:9200,  rev:2980, margin:27.2, txns:34, basket:87.6, trend:-3.9  },
+  "STR-004": { name:"Doha Festival City",     city:"Doha",       country:"Qatar",       type:"Standard", sqft:7500,  rev:2240, margin:25.9, txns:26, basket:86.2, trend:2.3   },
+  "STR-005": { name:"Cairo City Stars",       city:"Cairo",      country:"Egypt",       type:"Standard", sqft:8800,  rev:2710, margin:23.6, txns:32, basket:84.7, trend:11.5  },
+  "STR-006": { name:"Kuwait Avenues",         city:"Kuwait City",country:"Kuwait",      type:"Express",  sqft:4200,  rev:1380, margin:22.1, txns:18, basket:76.7, trend:2.2   },
+};
+
+const SKUS = [
+  { sku:"SKU-1020", name:"Coca-Cola 330ml Can",     cat:"Beverages",     units:154, rev:616,  margin:25.6, trend:-44 },
+  { sku:"SKU-1017", name:"Pepsi 330ml Can",          cat:"Beverages",     units:312, rev:936,  margin:24.1, trend:-5  },
+  { sku:"SKU-1026", name:"Lay's Classic 40g",        cat:"Snacks",        units:264, rev:792,  margin:29.4, trend:8   },
+  { sku:"SKU-1033", name:"Oreo Original 154g",       cat:"Snacks",        units:198, rev:792,  margin:32.1, trend:-1  },
+  { sku:"SKU-1038", name:"KitKat 4 Finger 45g",      cat:"Snacks",        units:176, rev:616,  margin:33.2, trend:12  },
+  { sku:"SKU-1062", name:"Head & Shoulders 400ml",   cat:"Personal Care", units:98,  rev:882,  margin:34.1, trend:6   },
+  { sku:"SKU-1073", name:"Ariel Powder 3kg",         cat:"Household",     units:87,  rev:1044, margin:8.2,  trend:-18 },
+  { sku:"SKU-1082", name:"Basmati Rice 5kg",         cat:"Food Staples",  units:112, rev:1120, margin:14.2, trend:3   },
+  { sku:"SKU-1049", name:"Full Fat Milk 1L",         cat:"Dairy",         units:203, rev:609,  margin:18.4, trend:-2  },
+  { sku:"SKU-1019", name:"7UP 330ml Can",            cat:"Beverages",     units:287, rev:861,  margin:23.8, trend:2   },
+];
+
+const CAT_REV = [
+  {cat:"Beverages",rev:1978},{cat:"Snacks",rev:1837},{cat:"Food Staples",rev:1034},
+  {cat:"Personal Care",rev:960},{cat:"Household",rev:876},{cat:"Dairy",rev:798},
+];
+
+const DOW = [
+  {day:"Mon",rev:2840},{day:"Tue",rev:2620},{day:"Wed",rev:2990},
+  {day:"Thu",rev:3410},{day:"Fri",rev:4280},{day:"Sat",rev:4650},{day:"Sun",rev:3120},
+];
+
+let INSIGHTS = [
+  { id:"i1", type:"velocity_drop",      sev:"high",   sku:"SKU-1020", product:"Coca-Cola 330ml Can",  cat:"Beverages",
+    headline:"Coca-Cola 330ml down 44% vs 7-day average",
+    narrative:"Sales dropped sharply since Monday with no promotion changes to explain the decline. The SKU was performing at normal velocity last week across all dayparts. A shelf availability issue is most probable.",
+    action:"Conduct an immediate shelf audit — check facing count, back-store stock, and planogram compliance.",
+    risk:1240, conf:0.87, feedback:"acted_on" },
+  { id:"i2", type:"margin_erosion",     sev:"high",   sku:"SKU-1073", product:"Ariel Powder 3kg",     cat:"Household",
+    headline:"Ariel 3kg promo pushing margin to 8.2% — below category floor",
+    narrative:"The current 25% promotional discount has compressed gross margin well below the Household category average of 28.7%. The promotion is running at a net loss once listing fees are included.",
+    action:"Review promo terms with Unilever MENA and cap the discount at 15% maximum for this SKU immediately.",
+    risk:880, conf:0.91, feedback:null },
+  { id:"i3", type:"seasonal_prep",      sev:"high",   sku:null, product:"All categories", cat:null,
+    headline:"Eid al-Fitr in 5 days — last window to build inventory",
+    narrative:"Historical data shows a 75% revenue uplift across all stores in the 3 days surrounding Eid. Beverages and Snacks see the sharpest spikes, particularly gifting-format pack sizes.",
+    action:"Increase Beverages and Snacks inventory by 60% before Tuesday and ensure gift packs are prominently displayed at entry points.",
+    risk:3200, conf:0.95, feedback:null },
+  { id:"i4", type:"demand_spike",       sev:"medium", sku:"SKU-1026", product:"Lay's Classic 40g",    cat:"Snacks",
+    headline:"Lay's Classic trending 2.1x above baseline — reorder urgently",
+    narrative:"Units sold today are at 208% of the 7-day average, driven by Ramadan gifting demand. At the current sell rate, stock will be exhausted within 36 hours.",
+    action:"Trigger emergency replenishment for Lay's Classic and adjacent Snacks SKUs before Thursday supplier cutoff.",
+    risk:720, conf:0.83, feedback:null },
+  { id:"i5", type:"basket_opportunity", sev:"medium", sku:"SKU-1033", product:"Oreo Original 154g",   cat:"Snacks",
+    headline:"Oreo buyers rarely add Pepsi — cross-merch opportunity",
+    narrative:"Oreo appears in 34% of all baskets but Pepsi co-appears in only 6% of those, despite both being top-10 SKUs. The snack-beverage pairing could add $8–12 per basket.",
+    action:"Place Pepsi facings adjacent to the Biscuits section and test a dual-SKU promo bundle this weekend.",
+    risk:540, conf:0.74, feedback:"not_relevant" },
+];
+
+let currentStore = "STR-001";
+let generatedInsights = {};
+
+// ════════════════════════════════════════════════════════
+// UTILS
+// ════════════════════════════════════════════════════════
+function genSeries(base, n=30) {
+  const r=[]; let v=base;
+  for(let i=n;i>=0;i--){
+    v=Math.max(base*.5,Math.min(base*1.7,v*(.86+Math.random()*.28)));
+    const d=new Date("2024-04-15"); d.setDate(d.getDate()-i);
+    r.push({label:d.toLocaleDateString("en-GB",{day:"numeric",month:"short"}),value:Math.round(v)});
+  }
+  return r;
+}
+
+function typeLabel(t){
+  const m={velocity_drop:"Velocity Drop",demand_spike:"Demand Spike",margin_erosion:"Margin Erosion",basket_opportunity:"Basket Opportunity",seasonal_prep:"Seasonal Prep"};
+  return m[t]||t;
+}
+
+function fbCount(fb){ return INSIGHTS.filter(x=>x.feedback===fb).length; }
+
+// ════════════════════════════════════════════════════════
+// CHART (vanilla canvas)
+// ════════════════════════════════════════════════════════
+function drawLineChart(canvasId, data, color="#1B2B4B") {
+  const canvas = document.getElementById(canvasId);
+  if(!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const W = canvas.offsetWidth || 800;
+  const H = canvas.height;
+  canvas.width = W;
+  ctx.clearRect(0,0,W,H);
+  const vals = data.map(d=>d.value);
+  const mn=Math.min(...vals), mx=Math.max(...vals);
+  const pad={t:10,r:10,b:30,l:55};
+  const gw=W-pad.l-pad.r, gh=H-pad.t-pad.b;
+  // Grid lines
+  ctx.strokeStyle="#F0F4F8"; ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){
+    const y=pad.t+(i/4)*gh;
+    ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(pad.l+gw,y); ctx.stroke();
+  }
+  // Y labels
+  ctx.fillStyle="#A0AEC0"; ctx.font="10px system-ui"; ctx.textAlign="right";
+  for(let i=0;i<=4;i++){
+    const v=mx-(i/4)*(mx-mn);
+    const y=pad.t+(i/4)*gh;
+    ctx.fillText("$"+(v/1000).toFixed(1)+"k", pad.l-6, y+3);
+  }
+  // X labels
+  ctx.textAlign="center";
+  const step=Math.floor(data.length/5);
+  data.forEach((d,i)=>{
+    if(i%step===0){
+      const x=pad.l+(i/(data.length-1))*gw;
+      ctx.fillText(d.label, x, H-8);
+    }
+  });
+  // Line
+  ctx.strokeStyle=color; ctx.lineWidth=2.5; ctx.lineJoin="round"; ctx.beginPath();
+  data.forEach((d,i)=>{
+    const x=pad.l+(i/(data.length-1))*gw;
+    const y=pad.t+gh-(d.value-mn)/(mx-mn||1)*gh;
+    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+}
+
+function drawBarChart(canvasId, data, colors, horizontal=false) {
+  const canvas = document.getElementById(canvasId);
+  if(!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const W = canvas.offsetWidth||800, H=canvas.height;
+  canvas.width=W; ctx.clearRect(0,0,W,H);
+  const vals=data.map(d=>d.value||d.rev||0);
+  const mx=Math.max(...vals);
+  const pad=horizontal?{t:5,r:20,b:5,l:110}:{t:10,r:10,b:30,l:55};
+  const gw=W-pad.l-pad.r, gh=H-pad.t-pad.b;
+  const n=data.length;
+  if(horizontal){
+    // Horizontal bars (categories)
+    const bh=Math.floor(gh/n)-6;
+    data.forEach((d,i)=>{
+      const v=d.value||d.rev||0;
+      const barW=(v/mx)*gw;
+      const y=pad.t+i*(bh+6);
+      ctx.fillStyle=colors[i]||"#8FA3BF";
+      ctx.beginPath(); ctx.roundRect(pad.l,y,barW,bh,3); ctx.fill();
+      ctx.fillStyle="#4A5568"; ctx.font="11px system-ui"; ctx.textAlign="right";
+      ctx.fillText(d.cat||d.label,pad.l-6,y+bh/2+4);
+      ctx.fillStyle="#6B7A99"; ctx.textAlign="left";
+      ctx.fillText("$"+(v).toLocaleString(),pad.l+barW+4,y+bh/2+4);
+    });
+  } else {
+    // Vertical bars
+    const bw=Math.floor(gw/n)-6;
+    ctx.strokeStyle="#F0F4F8"; ctx.lineWidth=1;
+    for(let i=0;i<=4;i++){
+      const y=pad.t+(i/4)*gh;
+      ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(pad.l+gw,y); ctx.stroke();
+      ctx.fillStyle="#A0AEC0"; ctx.font="10px system-ui"; ctx.textAlign="right";
+      ctx.fillText("$"+((mx*(1-i/4))/1000).toFixed(1)+"k",pad.l-6,y+4);
+    }
+    data.forEach((d,i)=>{
+      const v=d.value||d.rev||0;
+      const x=pad.l+i*(bw+6)+(gw-(n*(bw+6)-6))/2;
+      const bh=(v/mx)*gh;
+      ctx.fillStyle=colors[i]||"#8FA3BF";
+      ctx.beginPath(); ctx.roundRect(x,pad.t+gh-bh,bw,bh,4); ctx.fill();
+      ctx.fillStyle="#4A5568"; ctx.font="11px system-ui"; ctx.textAlign="center";
+      ctx.fillText(d.day||d.label,x+bw/2,H-8);
+    });
+  }
+}
+
+// ════════════════════════════════════════════════════════
+// RENDER FUNCTIONS
+// ════════════════════════════════════════════════════════
+function renderBrief() {
+  const s=STORES[currentStore];
+  document.getElementById("brief-title").textContent=s.name+" — Daily Brief";
+  document.getElementById("sparkline-title").textContent="30-DAY REVENUE — "+s.name.toUpperCase();
+
+  // Metrics
+  const mr=document.getElementById("metric-row");
+  mr.innerHTML=`
+    <div class="metric-card"><div class="mlabel">Revenue today</div><div class="mvalue">$${s.rev.toLocaleString()}</div><div class="msub" style="color:${s.trend>0?"#1E7E40":"#C0392B"}">${s.trend>0?"▲":"▼"} ${Math.abs(s.trend)}% vs yesterday</div></div>
+    <div class="metric-card"><div class="mlabel">Gross margin</div><div class="mvalue">${s.margin}%</div><div class="msub">Category avg 26.1%</div></div>
+    <div class="metric-card"><div class="mlabel">Transactions</div><div class="mvalue">${s.txns}</div><div class="msub">Avg basket $${s.basket}</div></div>
+    <div class="metric-card"><div class="mlabel">Active insights</div><div class="mvalue">${INSIGHTS.length}</div><div class="msub" style="color:#C9A84C">${fbCount("acted_on")} acted on</div></div>`;
+
+  // Insight cards
+  const ic=document.getElementById("insight-cards");
+  const sorted=[...INSIGHTS].sort((a,b)=>b.risk-a.risk);
+  ic.innerHTML=sorted.map(ins=>{
+    const g=generatedInsights[ins.id]||{};
+    const hl=g.headline||ins.headline;
+    const nar=g.narrative||ins.narrative;
+    const act=g.action||ins.action;
+    const cf=g.confidence||ins.conf;
+    return `
+    <div class="insight-card ${ins.sev}">
+      <div class="insight-top">
+        <div class="badges">
+          <span class="pill pill-${ins.sev}">${ins.sev==="high"?"High":"Medium"}</span>
+          <span class="pill pill-type">${typeLabel(ins.type)}</span>
+          ${ins.sku?`<span class="pill-sku">${ins.sku}</span>`:""}
+        </div>
+        <div class="risk-amt">$${ins.risk.toLocaleString()} at risk</div>
+      </div>
+      <div class="insight-headline">${hl}</div>
+      <div class="insight-narrative">${nar}</div>
+      <div class="action-box"><strong>ACTION: </strong>${act}</div>
+      <div class="insight-footer">
+        <div class="conf-wrap">
+          <div class="conf-label">Confidence</div>
+          <div class="conf-row">
+            <div class="conf-bar-bg" style="flex:1"><div class="conf-bar-fill" style="width:${Math.round(cf*100)}%"></div></div>
+            <span class="conf-pct">${Math.round(cf*100)}%</span>
+          </div>
+        </div>
+        <div class="fb-row">
+          <button class="regen-btn" onclick="regenerate('${ins.id}')">✦ Regenerate with AI</button>
+          <button class="fb-btn ${ins.feedback==="acted_on"?"acted":""}" onclick="setFb('${ins.id}','acted_on')">✓ Will act</button>
+          <button class="fb-btn ${ins.feedback==="not_relevant"?"notrel":""}" onclick="setFb('${ins.id}','not_relevant')">✗ Not relevant</button>
+          <button class="fb-btn ${ins.feedback==="wrong"?"wrong":""}" onclick="setFb('${ins.id}','wrong')">⚑ Flag wrong</button>
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+
+  // Sparkline
+  setTimeout(()=>{
+    const series=genSeries(s.rev);
+    drawLineChart("sparkline",series,"#C9A84C");
+  },50);
+}
+
+function renderAnalytics() {
+  const s=STORES[currentStore];
+  document.getElementById("rev-chart-title").textContent="DAILY REVENUE — "+s.name.toUpperCase()+" (30 DAYS)";
+  document.getElementById("dow-title").textContent="REVENUE BY DAY OF WEEK — "+s.name.toUpperCase();
+
+  // SKU table
+  document.getElementById("sku-tbody").innerHTML=SKUS.map((x,i)=>`
+    <tr>
+      <td style="font-family:monospace;font-size:10px;color:#A0AEC0;">${x.sku}</td>
+      <td style="font-weight:700;color:#1B2B4B;">${x.name}</td>
+      <td style="color:#718096;">${x.cat}</td>
+      <td>${x.units}</td>
+      <td style="font-weight:700;">$${x.rev}</td>
+      <td style="font-weight:700;color:${x.margin>25?"#1E7E40":x.margin>15?"#B7770D":"#C0392B"};">${x.margin}%</td>
+      <td style="font-weight:800;color:${x.trend>0?"#1E7E40":"#C0392B"};">${x.trend>0?"▲":"▼"} ${Math.abs(x.trend)}%</td>
+    </tr>`).join("");
+
+  // Store grid
+  document.getElementById("store-grid").innerHTML=Object.entries(STORES).map(([id,st],i)=>`
+    <div class="store-card ${id===currentStore?"selected":""}">
+      <div class="store-header">
+        <div><div class="store-name">${st.name}</div><div class="store-sub">${st.city} · ${st.type}</div></div>
+        <div class="store-rank" style="background:${i===0?"#C9A84C":"#EEF1F7"};color:${i===0?"#1B2B4B":"#6B7A99"};">#${i+1}</div>
+      </div>
+      <div class="store-stats">
+        <div class="store-stat"><div class="store-stat-l">Revenue</div><div class="store-stat-v">$${st.rev.toLocaleString()}</div></div>
+        <div class="store-stat"><div class="store-stat-l">Margin</div><div class="store-stat-v">${st.margin}%</div></div>
+        <div class="store-stat"><div class="store-stat-l">Txns</div><div class="store-stat-v">${st.txns}</div></div>
+        <div class="store-stat"><div class="store-stat-l">Basket</div><div class="store-stat-v">$${st.basket}</div></div>
+      </div>
+    </div>`).join("");
+
+  setTimeout(()=>{
+    const series=genSeries(s.rev);
+    drawLineChart("rev-chart",series,"#1B2B4B");
+    drawBarChart("cat-chart",CAT_REV,["#1B2B4B","#C9A84C","#8FA3BF","#B4C6DC","#BDCFE6","#D0DDF0"],true);
+    const dowColors=DOW.map(d=>d.rev>=4000?"#1B2B4B":d.rev>=3000?"#C9A84C":"#BDC9DA");
+    drawBarChart("dow-chart",DOW,dowColors,false);
+  },50);
+}
+
+function renderLog() {
+  const acted=fbCount("acted_on"), nr=fbCount("not_relevant"), wrong=fbCount("wrong"), pending=INSIGHTS.filter(x=>!x.feedback).length;
+  document.getElementById("log-summary").innerHTML=`
+    <div class="log-card" style="background:#EAF4EE;"><div class="log-val" style="color:#1E7E40;">${acted}</div><div class="log-lbl" style="color:#1E7E40;">Acted on</div></div>
+    <div class="log-card" style="background:#FEF8E7;"><div class="log-val" style="color:#B7770D;">${nr}</div><div class="log-lbl" style="color:#B7770D;">Not relevant</div></div>
+    <div class="log-card" style="background:#FDEDED;"><div class="log-val" style="color:#C0392B;">${wrong}</div><div class="log-lbl" style="color:#C0392B;">Flagged wrong</div></div>
+    <div class="log-card" style="background:#EEF1F7;"><div class="log-val" style="color:#6B7A99;">${pending}</div><div class="log-lbl" style="color:#6B7A99;">Pending</div></div>`;
+  document.getElementById("log-rows").innerHTML=INSIGHTS.map(i=>`
+    <div class="log-row">
+      <span class="pill pill-${i.sev}">${i.sev==="high"?"High":"Medium"}</span>
+      <span class="pill pill-type">${typeLabel(i.type)}</span>
+      <div class="log-text"><div class="log-headline">${i.headline}</div>${i.product?`<div class="log-product">${i.product}</div>`:""}</div>
+      <div style="font-size:13px;font-weight:800;color:#C0392B;">$${i.risk.toLocaleString()}</div>
+      <div style="min-width:105px;text-align:right;">
+        ${i.feedback
+          ? `<span class="status-pill" style="background:${i.feedback==="acted_on"?"#EAF4EE":i.feedback==="not_relevant"?"#FEF8E7":"#FDEDED"};color:${i.feedback==="acted_on"?"#1E7E40":i.feedback==="not_relevant"?"#B7770D":"#C0392B"};">${i.feedback==="acted_on"?"✓ Acted":i.feedback==="not_relevant"?"✗ Not relevant":"⚑ Flagged"}</span>`
+          : `<span style="font-size:11px;color:#A0AEC0;">Awaiting</span>`}
+      </div>
+    </div>`).join("");
+}
+
+function renderAdmin() {
+  const acted=fbCount("acted_on"), nr=fbCount("not_relevant"), wrong=fbCount("wrong"), total=INSIGHTS.length;
+  document.getElementById("accuracy-grid").innerHTML=`
+    <div class="admin-stat"><div class="admin-stat-v" style="color:#1E7E40;">${Math.round(acted/total*100)}%</div><div class="admin-stat-l">Acted on</div><div class="admin-stat-s">of all insights</div></div>
+    <div class="admin-stat"><div class="admin-stat-v" style="color:#B7770D;">${Math.round(nr/total*100)}%</div><div class="admin-stat-l">Not relevant</div><div class="admin-stat-s">model tuning signal</div></div>
+    <div class="admin-stat"><div class="admin-stat-v" style="color:${wrong/total>.1?"#C0392B":"#1E7E40"};">${Math.round(wrong/total*100)}%</div><div class="admin-stat-l">Wrong rate</div><div class="admin-stat-s">alert if >10%</div></div>
+    <div class="admin-stat"><div class="admin-stat-v" style="color:#6B7A99;">${INSIGHTS.filter(x=>!x.feedback).length}</div><div class="admin-stat-l">Pending</div><div class="admin-stat-s">awaiting feedback</div></div>`;
+  document.getElementById("perf-rows").innerHTML=INSIGHTS.map(i=>`
+    <div class="perf-row">
+      <span class="pill pill-type" style="min-width:140px;">${typeLabel(i.type)}</span>
+      <div class="perf-bar-bg"><div class="perf-bar-fill" style="width:${Math.round(i.conf*100)}%;background:${i.feedback==="wrong"?"#C0392B":i.feedback==="acted_on"?"#1E7E40":"#C9A84C"};"></div></div>
+      <span class="perf-fb">${i.feedback?.replace("_"," ")||"no feedback"}</span>
+      <span class="perf-pct">${Math.round(i.conf*100)}%</span>
+    </div>`).join("");
+}
+
+// ════════════════════════════════════════════════════════
+// INTERACTIONS
+// ════════════════════════════════════════════════════════
+function setFb(id, fb) {
+  const ins=INSIGHTS.find(x=>x.id===id);
+  if(ins) ins.feedback = ins.feedback===fb ? null : fb;
+  renderBrief();
+  renderLog();
+  if(document.getElementById("admin-content").style.display!=="none") renderAdmin();
+}
+
+async function regenerate(id) {
+  const ins=INSIGHTS.find(x=>x.id===id);
+  if(!ins) return;
+  const s=STORES[currentStore];
+  const btn=document.querySelector(`[onclick="regenerate('${id}')"]`);
+  if(btn){ btn.textContent="Generating…"; btn.disabled=true; }
+  try {
+    const res=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        model:"claude-sonnet-4-20250514", max_tokens:600,
+        system:"You are a retail analytics expert for FMCG retailers in the Middle East. Respond ONLY with valid JSON, no markdown.",
+        messages:[{role:"user",content:`Signal: ${ins.type}\nStore: ${s.name}, ${s.city}, ${s.country}\nProduct: ${ins.product}\nrevenue_at_risk=$${ins.risk}, date=2024-04-15, Eid in 5 days\nGenerate: {"headline":"max 12 words","narrative":"2-3 specific sentences","action":"one imperative sentence","confidence":0.0_to_1.0}`}]
+      })
+    });
+    const d=await res.json();
+    const txt=d.content?.[0]?.text||"{}";
+    generatedInsights[id]=JSON.parse(txt.replace(/```json|```/g,"").trim());
+  } catch(e){ console.error(e); }
+  renderBrief();
+}
+
+function checkPw(){
+  const pw=document.getElementById("pw-input").value;
+  if(pw==="atco2024"){
+    document.getElementById("lock-screen").style.display="none";
+    document.getElementById("admin-content").style.display="block";
+    renderAdmin();
+  } else {
+    document.getElementById("pw-input").style.borderColor="#C0392B";
+    document.getElementById("pw-input").value="";
+    document.getElementById("pw-input").placeholder="Wrong password";
+  }
+}
+
+function switchTab(tabId, btn) {
+  document.querySelectorAll(".nav-tab").forEach(b=>b.classList.remove("active"));
+  if(btn) btn.classList.add("active");
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  const page=document.getElementById("page-"+tabId);
+  if(page) page.classList.add("active");
+  if(tabId==="brief")     renderBrief();
+  if(tabId==="analytics") renderAnalytics();
+  if(tabId==="log")       renderLog();
+}
+
+function switchSubTab(subId, btn) {
+  document.querySelectorAll(".sub-tab").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+  document.querySelectorAll(".sub-page").forEach(p=>p.classList.remove("active"));
+  document.getElementById("sub-"+subId).classList.add("active");
+  if(subId==="revenue"||subId==="stores"||subId==="patterns") renderAnalytics();
+}
+
+function switchStore(storeId) {
+  currentStore=storeId;
+  const activeTab=document.querySelector(".nav-tab.active");
+  const tabId=activeTab?.textContent?.toLowerCase().replace(" ","_") || "brief";
+  renderBrief();
+  renderAnalytics();
+}
+
+function showLanding() {
+  document.getElementById("landing-page").style.display="block";
+  document.getElementById("app").style.display="none";
+  document.getElementById("main-nav").style.display="none";
+  document.getElementById("landing-content").style.display="block";
+  document.getElementById("loading-screen").style.display="none";
+}
+
+function gotoAdmin(){
+  document.getElementById("landing-page").style.display="none";
+  document.getElementById("app").style.display="block";
+  document.getElementById("main-nav").style.display="flex";
+  // Switch to admin tab
+  document.querySelectorAll(".nav-tab").forEach((b,i)=>{b.classList.remove("active");if(i===3)b.classList.add("active");});
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById("page-admin").classList.add("active");
+}
+
+function startDemo(){
+  const msgs=["Loading 191,377 transaction lines...","Mapping fields across 12 stores...","Computing 7/30-day baselines per SKU...","Running 12 insight templates...","Ranking by revenue impact..."];
+  document.getElementById("landing-content").style.display="none";
+  document.getElementById("loading-screen").style.display="flex";
+  let i=0;
+  document.getElementById("load-msg").textContent=msgs[0];
+  document.getElementById("d0").classList.add("done");
+  const iv=setInterval(()=>{
+    i++;
+    if(i<msgs.length){
+      document.getElementById("load-msg").textContent=msgs[i];
+      document.getElementById("d"+i).classList.add("done");
+    } else {
+      clearInterval(iv);
+      document.getElementById("landing-page").style.display="none";
+      document.getElementById("loading-screen").style.display="none";
+      document.getElementById("app").style.display="block";
+      document.getElementById("main-nav").style.display="flex";
+      renderBrief();
+    }
+  },700);
+}
+
+// Handle window resize for charts
+window.addEventListener("resize",()=>{
+  if(document.getElementById("page-brief").classList.contains("active")) renderBrief();
+  if(document.getElementById("page-analytics").classList.contains("active")) renderAnalytics();
+});
+</script>
+</body>
+</html>
